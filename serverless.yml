@@ -55,11 +55,12 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  resize:
-    handler: resize.handler
+  new-image-uploader:
+    handler: new-image-uploader.upload
     events:
-      - s3: photos
-
+      - http:
+          path: images/upload
+          method: post
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
