@@ -9,7 +9,9 @@ const s3 = new AWSS3();
 module.exports.upload = (event, context) => {
     let request = event.body;
 
-    let base64Image = request.data.image;
+    console.log(request);
+
+    let base64Image = JSON.parse(request)['data']['image'];
 
     let buffer = new Buffer(base64Image, 'base64');
 
