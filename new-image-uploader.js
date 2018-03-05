@@ -2,11 +2,10 @@
 
 const AWSS3 = require('aws-sdk/clients/s3');
 const fileType = require('file-type');
-const sha1 = require('sha1');
 
 const s3 = new AWSS3();
 
-module.exports.upload = (event, context) => {
+module.exports.upload = (event, context, callback) => {
     let request = event.body;
 
     let base64Image = JSON.parse(request)['data']['image'];
@@ -16,7 +15,7 @@ module.exports.upload = (event, context) => {
     let fileMime = fileType(buffer);
 
     if (fileMime === null) {
-        return context.fail('The string supplied is not a file type');
+        return callback('The string supplied is not a file type');
     }
 
     let file = getFile(fileMime, buffer);
@@ -24,26 +23,28 @@ module.exports.upload = (event, context) => {
 
     s3.putObject(params, function (err, data) {
         if (err) {
-            return console.log(err);
+            return callback(err);
         }
 
+        let response = {
+            statusCode: 200,
+            body: JSON.stringify({ "message": data })
+        };
 
-        return console.log('File URL', file.full_path);
+        return callback(null, response);
     });
 };
 
 let getFile = function (fileMime, buffer) {
     let fileExt = fileMime.ext;
-    let hash = sha1(Buffer.from(new Date().toString()));
 
-    let filePath = hash + '/';
-    let fileName = 'someFile' + '.' + fileExt;
-    let fileFullName = filePath + fileName;
-    let fileFullPath = 'test-image-bucket-1-test' + fileFullName;
+    let fileName = 'someFile.' + fileExt;
+    let fileFullName = fileName;
+    let fileFullPath = 'test-image-service-new-bucket-test' + fileFullName;
 
     let params = {
-        Bucket: 'test-image-bucket-1-test',
-        Key: fileFullName + fileExt,
+        Bucket: 'test-image-service-new-bucket-test',
+        Key: fileFullName,
         Body: buffer
     };
 

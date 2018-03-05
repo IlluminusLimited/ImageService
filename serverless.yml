@@ -58,9 +58,22 @@ functions:
   new-image-uploader:
     handler: new-image-uploader.upload
     events:
-      - http:
-          path: images/upload
-          method: post
+      - http: POST images/upload
+
+resources:
+  Resources:
+    S3Bucket:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        BucketName: test-image-service-new-bucket-test
+        AccessControl: PublicReadWrite
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT, POST, HEAD]
+              AllowedOrigins: ['*']
+              MaxAge: '3600'
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
