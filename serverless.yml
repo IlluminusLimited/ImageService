@@ -19,7 +19,7 @@ provider:
 
 functions:
   new-image-uploader:
-    handler: new-image-uploader.upload
+    handler: new-image-uploader/index.upload
     events:
       - http: POST images/upload
 

@@ -1,22 +1,15 @@
 'use strict';
 
 const AWSS3 = require('aws-sdk/clients/s3');
-const fileType = require('file-type');
-
+const Base64Handler = require('new-image-uploader/base64-handler')
 const s3 = new AWSS3();
 
 module.exports.upload = (event, context, callback) => {
-    let request = event.body;
 
-    let base64Image = JSON.parse(request)['data']['image'];
+    let base64Image = Base64Handler.getBase64Image(event);
+    let buffer = Base64Handler.getBuffer(base64Image);
+    let fileMime = Base64Handler.getMimeType(buffer);
 
-    let buffer = Buffer.from(base64Image.substr(base64Image.indexOf(',') + 1), 'base64');
-
-    let fileMime = fileType(buffer);
-
-    if (fileMime === null) {
-        return callback('The string supplied is not a file type');
-    }
 
     let file = getFile(fileMime, buffer);
     let params = file.params;
