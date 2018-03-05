@@ -4,6 +4,7 @@ const AWSS3 = require('aws-sdk/clients/s3');
 const moment = require('moment');
 const fileType = require('file-type');
 const sha1 = require('sha1');
+const unixTime = require('unix-time');
 
 const s3 = new AWSS3();
 
