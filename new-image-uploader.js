@@ -3,6 +3,7 @@
 const AWSS3 = require('aws-sdk/clients/s3');
 const moment = require('moment');
 const fileType = require('file-type');
+const sha1 = require('sha1');
 
 const s3 = new AWSS3();
 
@@ -11,7 +12,7 @@ module.exports.upload = (event, context) => {
 
     let base64Image = JSON.parse(request)['data']['image'];
 
-    let buffer =  Buffer.from(base64Image.substr(base64Image.indexOf(',') + 1), 'base64');
+    let buffer = Buffer.from(base64Image.substr(base64Image.indexOf(',') + 1), 'base64');
 
     let fileMime = fileType(buffer);
 
@@ -34,7 +35,7 @@ module.exports.upload = (event, context) => {
 
 let getFile = function (fileMime, buffer) {
     let fileExt = fileMime.ext;
-    let hash = sha1(new Buffer(new Date().toString()));
+    let hash = sha1(Buffer.from(new Date().toString()));
     let now = moment().format('YYYY-MM-DD HH:mm:ss');
 
     let filePath = hash + '/';
