@@ -1,15 +1,25 @@
 const fileType = require('file-type');
 
 class Base64Handler {
-    static getBase64Image(event) {
-        return JSON.parse(event.body)['data']['image'];
+    static getBase64Image(event, callback) {
+        let json = JSON.parse(event.body)['data']['image'];
+
+        if (json === null) {
+            return callback('Error parsing json. Expected format is: {"data":{"image":"base64String of your image"}')
+        }
+
+        return json;
     }
 
-    static getBuffer(base64Image) {
-        return Buffer.from(base64Image.substr(base64Image.indexOf(',') + 1), 'base64');
+    static getBuffer(prunedBase64String) {
+        return Buffer.from(prunedBase64String, 'base64');
     }
 
-    static getMimeType(buffer) {
+    static pruneBase64String(base64Image) {
+        return base64Image.substr(base64Image.indexOf(',') + 1)
+    }
+
+    static getMimeType(buffer, callback) {
         let fileMime = fileType(buffer);
 
         if (fileMime === null) {

@@ -1,14 +1,14 @@
 'use strict';
 
 const AWSS3 = require('aws-sdk/clients/s3');
-const Base64Handler = require('new-image-uploader/base64-handler')
+const Base64Handler = require('../new-image-uploader/base64-handler');
 const s3 = new AWSS3();
 
 module.exports.upload = (event, context, callback) => {
 
     let base64Image = Base64Handler.getBase64Image(event);
-    let buffer = Base64Handler.getBuffer(base64Image);
-    let fileMime = Base64Handler.getMimeType(buffer);
+    let buffer = Base64Handler.getBuffer(Base64Handler.pruneBase64String(base64Image));
+    let fileMime = Base64Handler.getMimeType(buffer, callback);
 
 
     let file = getFile(fileMime, buffer);
