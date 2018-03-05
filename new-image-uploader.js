@@ -1,10 +1,8 @@
 'use strict';
 
 const AWSS3 = require('aws-sdk/clients/s3');
-const moment = require('moment');
 const fileType = require('file-type');
 const sha1 = require('sha1');
-const unixTime = require('unix-time');
 
 const s3 = new AWSS3();
 
@@ -37,10 +35,9 @@ module.exports.upload = (event, context) => {
 let getFile = function (fileMime, buffer) {
     let fileExt = fileMime.ext;
     let hash = sha1(Buffer.from(new Date().toString()));
-    let now = moment().format('YYYY-MM-DD HH:mm:ss');
 
     let filePath = hash + '/';
-    let fileName = unixTime(now) + '.' + fileExt;
+    let fileName = 'someFile' + '.' + fileExt;
     let fileFullName = filePath + fileName;
     let fileFullPath = 'test-image-bucket-1-test' + fileFullName;
 
