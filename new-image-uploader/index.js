@@ -4,12 +4,11 @@ const AWSS3 = require('aws-sdk/clients/s3');
 const Base64Handler = require('../new-image-uploader/base64-handler');
 const s3 = new AWSS3();
 
-module.exports.upload = (event, context, callback) => {
+module.exports.handler = (event, context, callback) => {
 
     let base64Image = Base64Handler.getBase64Image(event);
     let buffer = Base64Handler.getBuffer(Base64Handler.pruneBase64String(base64Image));
     let fileMime = Base64Handler.getMimeType(buffer, callback);
-
 
     let file = getFile(fileMime, buffer);
     let params = file.params;
@@ -21,11 +20,12 @@ module.exports.upload = (event, context, callback) => {
 
         let response = {
             statusCode: 200,
-            body: JSON.stringify({ "message": data })
+            body: JSON.stringify({"message": data})
         };
 
         return callback(null, response);
     });
+
 };
 
 let getFile = function (fileMime, buffer) {

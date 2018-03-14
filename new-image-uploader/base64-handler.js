@@ -1,11 +1,16 @@
 const fileType = require('file-type');
 
 class Base64Handler {
+
+    static JSON_ERROR() {
+        return 'Error parsing json. Expected format is: {"data":{"image":"base64String of your image"}';
+    }
+
     static getBase64Image(event, callback) {
         let json = JSON.parse(event.body)['data']['image'];
 
-        if (json === null) {
-            return callback('Error parsing json. Expected format is: {"data":{"image":"base64String of your image"}')
+        if (json === null || json === undefined) {
+            return callback(this.JSON_ERROR())
         }
 
         return json;

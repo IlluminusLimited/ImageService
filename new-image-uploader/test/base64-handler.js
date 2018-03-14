@@ -17,10 +17,11 @@ describe("Base64 handler", function () {
     it("Blows up when json is malformed", function () {
         let eventFixture = class {
             constructor() {
-                this.body = JSON.stringify({'data': 'base64stuff'})
+                this.body = JSON.stringify({'data': 'not_json'})
             }
         };
-        expect(Base64Handler.getBase64Image(new eventFixture())).to.equal('base64stuff')
+
+        Base64Handler.getBase64Image(new eventFixture(), (arg)=>{expect(arg).to.equal(Base64Handler.JSON_ERROR())})
     });
 
     it("Removes everything in front of comma, inclusive", function () {
