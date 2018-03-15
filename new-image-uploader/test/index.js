@@ -7,6 +7,8 @@ let LambdaTester = require('lambda-tester');
 
 let newImageUploaderLambda = require('../index').handler;
 
+let Base64Handler = require('../base64-handler');
+
 describe('new-image-uploader lambda', function () {
     it('Lambda actually works', function () {
         return LambdaTester(newImageUploaderLambda)
@@ -14,9 +16,11 @@ describe('new-image-uploader lambda', function () {
             .expectResult()
     });
 
-    it('Blows up', function () {
+    it('Blows up on invalid body', function () {
         return LambdaTester(newImageUploaderLambda)
             .event({body: JSON.stringify({data: {'not_image': 'base64stuff'}})})
-            .expectError();
+            .expectError((err) => {
+                expect(err.message).to.equal(Base64Handler.JSON_ERROR());
+            });
     })
 });

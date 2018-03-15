@@ -6,7 +6,7 @@ const s3 = new AWSS3();
 
 module.exports.handler = (event, context, callback) => {
 
-    let base64Image = Base64Handler.getBase64Image(event);
+    let base64Image = Base64Handler.getBase64Image(event, callback);
     let buffer = Base64Handler.getBuffer(Base64Handler.pruneBase64String(base64Image));
     let fileMime = Base64Handler.getMimeType(buffer, callback);
 
