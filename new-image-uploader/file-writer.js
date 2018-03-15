@@ -1,4 +1,3 @@
-
 class FileWriter {
     constructor(s3) {
         this.s3 = s3;
@@ -13,7 +12,8 @@ class FileWriter {
             let response = {
                 statusCode: 200,
                 body: JSON.stringify({
-                    params: params,
+                    bucket: params['Bucket'],
+                    key: params['Key'],
                     message: data
                 })
             };
