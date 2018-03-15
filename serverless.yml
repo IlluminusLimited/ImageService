@@ -29,7 +29,6 @@ resources:
       Type: 'AWS::S3::Bucket'
       Properties:
         BucketName: test-image-service-new-bucket-test
-        AccessControl: PublicReadWrite
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders: ['*']
