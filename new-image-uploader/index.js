@@ -4,7 +4,7 @@ const AWSS3 = require('aws-sdk/clients/s3');
 const Base64Handler = require('../new-image-uploader/base64-handler');
 const s3 = new AWSS3();
 
-module.exports.handler = (event, context, callback) => {
+module.exports.upload = (event, context, callback) => {
 
     let base64Image = Base64Handler.getBase64Image(event, callback);
     let buffer = Base64Handler.getBuffer(Base64Handler.pruneBase64String(base64Image));

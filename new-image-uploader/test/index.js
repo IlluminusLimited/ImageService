@@ -5,7 +5,7 @@ let expect = require('chai').expect;
 
 let LambdaTester = require('lambda-tester');
 
-let newImageUploaderLambda = require('../index').handler;
+let newImageUploaderLambda = require('../index').upload;
 
 let Base64Handler = require('../base64-handler');
 
