@@ -17,6 +17,14 @@ provider:
   name: aws
   runtime: nodejs6.10
 
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "s3:*"
+        Resource:
+          - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
+          - "arn:aws:s3:::test-image-service-new-bucket-test/*"
+
 functions:
   new-image-uploader:
     handler: new-image-uploader/index.upload

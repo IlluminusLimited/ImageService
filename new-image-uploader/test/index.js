@@ -9,6 +9,7 @@ let newImageUploaderLambda = require('../index').upload;
 
 let Base64Handler = require('../base64-handler');
 
+
 describe('new-image-uploader lambda', function () {
     it('Lambda actually works', function () {
         return LambdaTester(newImageUploaderLambda)
