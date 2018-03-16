@@ -9,23 +9,13 @@ class FileBuilder {
         let fileExt = fileMime.ext;
 
         let fileName = uuid() + '.' + fileExt;
-        let fileFullName = fileName;
-        let fileFullPath = bucketName + fileFullName;
 
-        let params = {
+
+        return  {
             Bucket: bucketName,
-            Key: fileFullName,
+            Key: fileName,
             Body: buffer
         };
-
-        let uploadFile = {
-            size: buffer.toString('ascii').length,
-            type: fileMime.mime,
-            name: fileName,
-            full_path: fileFullPath
-        };
-
-        return params;
     }
 }
 
