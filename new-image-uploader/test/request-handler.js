@@ -2,6 +2,7 @@
 
 let expect = require('chai').expect;
 let RequestHandler = require('../request-handler');
+let sinon = require('sinon');
 
 let goodPayload = {
     data: {
@@ -16,8 +17,7 @@ let goodPayload = {
 let badYearPayload = {
     data: {
         user_id: "uuid",
-        metadata: {
-        },
+        metadata: {},
         image: "base64 encoded image"
     }
 };
@@ -33,13 +33,15 @@ describe("RequestHandler", function () {
         expect(RequestHandler.parseRequest(new eventFixture())).to.deep.include(goodPayload['data'])
     });
 
-    it("BLows up on missing year", function () {
+    it("Blows up on missing year", function () {
         let eventFixture = class {
             constructor() {
                 this.body = JSON.stringify(badYearPayload);
             }
         };
+        let callback = sinon.spy();
 
-        expect(RequestHandler.parseRequest(new eventFixture(), function())).to.deep.include(goodPayload['data'])
+        RequestHandler.parseRequest(new eventFixture(), callback);
+        expect(callback.called).to.be.true;
     });
 });

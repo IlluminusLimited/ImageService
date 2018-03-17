@@ -2,26 +2,11 @@
 
 let expect = require('chai').expect;
 let Base64Handler = require('../base64-handler');
+let base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIfAhkiAAAAFlJREFUCJl9yjEKwCAUBNERv43g/U+WKqVVsNRKxU0jJGnyYGGLcTln1VoBSCnRWsN7D0AIATOjlEKMEbQd16kxhuac6r1rrfWZJBmbAEn8eeKlT/z+zjkAbkDFRMbggmGwAAAAAElFTkSuQmCC'
 
 describe("Base64 handler", function () {
-    it("Gets base64 string from event", function () {
-        let eventFixture = class {
-            constructor() {
-                this.body = JSON.stringify({'data': {'image': 'base64stuff'}})
-            }
-        };
-
-        expect(Base64Handler.getBase64Image(new eventFixture())).to.equal('base64stuff')
-    });
-
-    it("Blows up when json is malformed", function () {
-        let eventFixture = class {
-            constructor() {
-                this.body = JSON.stringify({'data': 'not_json'})
-            }
-        };
-
-        Base64Handler.getBase64Image(new eventFixture(), (arg)=>{expect(arg).to.equal(Base64Handler.JSON_ERROR())})
+    it("Gets the correct mime type", function () {
+        expect(Base64Handler.getMimeType(Base64Handler.getBuffer(base64Image))).to.deep.include({ ext: 'png', mime: 'image/png' } )
     });
 
     it("Removes everything in front of comma, inclusive", function () {

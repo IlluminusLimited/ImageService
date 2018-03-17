@@ -1,10 +1,6 @@
 const uuid = require('uuid/v4');
 
 class FileBuilder {
-    constructor(s3) {
-        this.s3 = s3;
-    }
-
     getFile(fileMime, buffer, bucketName) {
         let fileExt = fileMime.ext;
 
