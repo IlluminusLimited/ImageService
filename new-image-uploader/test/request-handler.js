@@ -6,8 +6,8 @@ let sinon = require('sinon');
 
 let goodPayload = {
     data: {
-        user_id: "uuid",
         metadata: {
+            user_id: "uuid",
             year: "integer year"
         },
         image: "base64 encoded image"
@@ -16,8 +16,7 @@ let goodPayload = {
 
 let badYearPayload = {
     data: {
-        user_id: "uuid",
-        metadata: {},
+        metadata: {user_id: "uuid"},
         image: "base64 encoded image"
     }
 };

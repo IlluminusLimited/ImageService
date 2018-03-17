@@ -4,11 +4,12 @@ class RequestHandler {
     static parseRequest(event, callback) {
         let data = JSON.parse(event.body)['data'];
         let image = data["image"];
-        let userId = data['user_id'];
         let metadata = data['metadata'];
         let year = null;
-        if(metadata != null) {
+        let userId = null;
+        if (metadata != null) {
             year = metadata['year'];
+            userId = metadata['user_id'];
         }
 
 
@@ -19,8 +20,8 @@ class RequestHandler {
                     error: "Bad Request. Required fields are missing.",
                     example_body: {
                         data: {
-                            user_id: "uuid",
                             metadata: {
+                                user_id: "uuid",
                                 year: "integer year"
                             },
                             image: "base64 encoded image"
@@ -32,7 +33,6 @@ class RequestHandler {
         }
 
         return {
-            user_id: userId,
             metadata: metadata,
             image: image
         }
@@ -44,7 +44,7 @@ class RequestHandler {
         let buffer = Base64Handler.getBuffer(Base64Handler.pruneBase64String(parsedRequest['image']));
         let fileMime = Base64Handler.getMimeType(buffer, callback);
 
-        let params = fileBuilder.getFile(fileMime, buffer, bucket);
+        let params = fileBuilder.getFile(fileMime, buffer, bucket, parsedRequest['metadata']);
 
         fileWriter.saveObject(callback, params);
     }
