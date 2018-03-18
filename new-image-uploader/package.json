@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Image uploading service for Pinster",
   "main": "new-image-uploader.js",
-  "repository": "http:not.present",
+  "repository": "https://github.com/PinsterTeam/image-service",
   "dependencies": {
     "aws-sdk": "^2.205.0",
     "file-type": "^7.6.0",

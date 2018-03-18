@@ -1,16 +1,3 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
 service: image-service
 
 provider:
@@ -18,12 +5,18 @@ provider:
   runtime: nodejs6.10
 
   iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "s3:*"
-        Resource:
-          - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
-          - "arn:aws:s3:::${self:custom.imageUploaderBucket}/*"
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
+        - "arn:aws:s3:::${self:custom.imageUploaderBucket}/*"
+
+    - Effect: "Allow"
+      Action:
+        - "states:StartExecution"
+      Resource:
+        - "*"
 
 custom:
   imageUploaderBucket: test-image-service-new-bucket-test
@@ -33,8 +26,36 @@ functions:
     handler: new-image-uploader/index.upload
     events:
       - http: POST images/upload
+    memorySize: 256 # In MB
     environment:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
+
+  startExecution:
+    handler: thumbnail-processor/handler.start
+    events:
+      - s3:
+        bucket: ${self:custom.imageUploaderBucket}
+        event: s3:ObjectCreated:*
+    environment:
+      STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
+
+  generate-thumbnail:
+    handler: thumbnail-processor/handler.generateThumbnail
+    environment:
+      STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
+
+stepFunctions:
+  stateMachines:
+    hellostepfunc1:
+      name: thumbnailProcessor
+      definition:
+        Comment: "StateMachine that turns raw images into thumbnails"
+        StartAt: GenerateThumbnail
+        States:
+          GenerateThumbnail:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-generateThumbnail"
+            End: true
 
 resources:
   Resources:
@@ -48,3 +69,12 @@ resources:
               AllowedMethods: [GET, PUT, POST, HEAD]
               AllowedOrigins: ['*']
               MaxAge: '3600'
+  Outputs:
+    ThumbnailProcessor:
+      Description: The ARN of the ThumbnailProcessor state machine
+      Value:
+        Ref: ThumbnailProcessor
+
+plugins:
+  - serverless-step-functions
+  - serverless-pseudo-parameters

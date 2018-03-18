@@ -1,0 +1,16 @@
+{
+  "name": "thumbnail-processor",
+  "version": "1.0.0",
+  "description": "Thumbnail processing service for Pinster",
+  "repository": "https://github.com/PinsterTeam/image-service",
+  "main": "handler.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.211.0",
+    "sharp": "^0.20.1"
+  }
+}
