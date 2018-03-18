@@ -23,20 +23,25 @@ provider:
           - "s3:*"
         Resource:
           - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
-          - "arn:aws:s3:::test-image-service-new-bucket-test/*"
+          - "arn:aws:s3:::${self:custom.imageUploaderBucket}/*"
+
+custom:
+  imageUploaderBucket: test-image-service-new-bucket-test
 
 functions:
   new-image-uploader:
     handler: new-image-uploader/index.upload
     events:
       - http: POST images/upload
+    environmentVariables:
+          BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
 resources:
   Resources:
     S3Bucket:
       Type: 'AWS::S3::Bucket'
       Properties:
-        BucketName: test-image-service-new-bucket-test
+        BucketName: ${self:custom.imageUploaderBucket}
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders: ['*']
