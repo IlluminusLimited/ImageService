@@ -33,7 +33,7 @@ functions:
     handler: new-image-uploader/index.upload
     events:
       - http: POST images/upload
-    environmentVariables:
+    environment:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
 resources:
