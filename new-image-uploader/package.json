@@ -7,7 +7,7 @@
   "dependencies": {
     "aws-sdk": "^2.205.0",
     "file-type": "^7.6.0",
-    "uuid": "^3.2.1"
+    "md5": "^2.2.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",

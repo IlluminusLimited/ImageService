@@ -6,6 +6,7 @@ class FileWriter {
     saveObject(callback, params) {
         this.s3.putObject(params, function (err, data) {
             if (err) {
+                console.log(err, err.stack);
                 return callback(err);
             }
 

@@ -1,10 +1,10 @@
-const uuid = require('uuid/v4');
+const md5 = require('md5');
 
 class FileBuilder {
     getFile(fileMime, buffer, bucketName, metadata) {
         let fileExt = fileMime.ext;
 
-        let fileName = uuid() + '.' + fileExt;
+        let fileName = md5(buffer) + '.' + fileExt;
 
         if (metadata == null) {
             metadata = {};
