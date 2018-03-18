@@ -22,29 +22,15 @@ if (process.env.ALLOWED_DIMENSIONS) {
 module.exports.startExecution = (event, context, callback) => {
     console.log('startExecution');
 
-    console.log(event);
-
-    console.log(event.Records);
-
-    console.log(event.Records[0]);
-
-    console.log(event.Records[0]['s3']);
-
-    console.log(event.Records[0]['s3']['object']);
-    console.log(event.Records[0]['s3']['object']['key']);
-
-    console.log(event.Records[0]['s3']['bucket']);
-    console.log(event.Records[0]['s3']['bucket']['name']);
-
     let s3Event = event.Records[0]['s3']['object'];
-    let s3Event2 = event.Records[0]['s3']['bucket'];
+    let s3BucketName = event.Records[0]['s3']['bucket']['name'];
 
     console.log(s3Event);
     // let desiredSizes = new Set();
     let height = 100;
     let width = 100;
 
-    let resizeParams = {Bucket: s3Event2.name, Key: s3Event.key, height: height, width: width};
+    let resizeParams = {Bucket: s3BucketName, Key: s3Event.key, height: height, width: width};
     console.log(resizeParams);
 
     callStepFunction(resizeParams).then(result => {
