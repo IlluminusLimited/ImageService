@@ -18,6 +18,6 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
-  "author": "",
+  "author": "Andrew Newell",
   "license": "ISC"
 }
