@@ -77,7 +77,7 @@ module.exports.generateThumbnail = (event, context, callback) => {
     let newKey = key.replace(/(\.[\w\d_-]+)$/i, '_' + width + 'x' + height + '.' + format);
     newKey = newKey.replace(/raw\//i, '');
 
-    console.log("New key is: " + newKey)
+    console.log("New key is: " + newKey);
 
     S3.getObject({Bucket: bucket, Key: key}).promise()
         .then(data => Sharp(data.Body)

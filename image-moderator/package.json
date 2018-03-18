@@ -8,5 +8,9 @@
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "author": "Andrew Newell",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.211.0",
+    "util": "^0.10.3"
+  }
 }

@@ -52,6 +52,12 @@ functions:
   generateThumbnail:
     handler: thumbnail-processor/handler.generateThumbnail
 
+  moderate:
+    handler: image-moderator/handler.moderate
+
+  notify:
+    handler: integrations.notify
+
 stepFunctions:
   stateMachines:
     thumbnailProcessor:
@@ -60,9 +66,21 @@ stepFunctions:
         Comment: "StateMachine that turns raw images into thumbnails"
         StartAt: GenerateThumbnail
         States:
+          Moderate:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-moderate"
+            Next: GenerateThumbnail
+            Catch:
+            - ErrorEquals:
+              - ModerationThresholdExceeded
+              Next: NotifyPinsterBase
           GenerateThumbnail:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-generateThumbnail"
+            End: true
+          NotifyPinsterBase:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify"
             End: true
 
 resources:
