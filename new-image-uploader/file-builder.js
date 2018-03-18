@@ -4,7 +4,7 @@ class FileBuilder {
     getFile(fileMime, buffer, bucketName, metadata) {
         let fileExt = fileMime.ext;
 
-        let fileName = md5(buffer) + '.' + fileExt;
+        let fileName = 'raw/' + md5(buffer) + '.' + fileExt;
 
         if (metadata == null) {
             metadata = {};

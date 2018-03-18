@@ -4,6 +4,9 @@ const AWS = require('aws-sdk');
 const S3 = new AWS.S3({
     signatureVersion: 'v4',
 });
+
+const stepfunctions = new AWS.StepFunctions();
+
 const Sharp = require('sharp');
 
 const BUCKET = process.env.BUCKET;
@@ -19,24 +22,39 @@ if (process.env.ALLOWED_DIMENSIONS) {
 module.exports.startExecution = (event, context, callback) => {
     console.log('startExecution');
 
-    let s3Event = JSON.parse(event.body);
+    console.log(event);
+
+    console.log(event.Records);
+
+    console.log(event.Records[0]);
+
+    console.log(event.Records[0]['s3']);
+
+    console.log(event.Records[0]['s3']['object']);
+    console.log(event.Records[0]['s3']['object']['key']);
+
+    console.log(event.Records[0]['s3']['bucket']);
+    console.log(event.Records[0]['s3']['bucket']['name']);
+
+    let s3Event = event.Records[0]['s3']['object'];
+    let s3Event2 = event.Records[0]['s3']['bucket'];
+
     console.log(s3Event);
     // let desiredSizes = new Set();
     let height = 100;
     let width = 100;
 
-    let resizeParams = {Bucket: s3Event.Bucket, Key: s3Event.Key, height: height, width: width};
+    let resizeParams = {Bucket: s3Event2.name, Key: s3Event.key, height: height, width: width};
     console.log(resizeParams);
 
     callStepFunction(resizeParams).then(result => {
-        let message = 'Step function is executing';
         if (!result) {
-            message = 'Step function is not executing';
+            return callback("Failed to execute step function");
         }
 
         const response = {
             statusCode: 200,
-            body: JSON.stringify({message})
+            body: JSON.stringify({message: 'Step function is executing'})
         };
 
         console.log(response);
@@ -49,36 +67,19 @@ module.exports.startExecution = (event, context, callback) => {
 function callStepFunction(resizeParams) {
     console.log('callStepFunction');
 
-    const stateMachineName = 'ThumbnailProcessor'; // The name of the step function we defined in the serverless.yml
-    console.log('Fetching the list of available workflows');
+    let params = {
+        stateMachineArn: process.env['STATEMACHINE_ARN'],
+        input: JSON.stringify(resizeParams)
+    };
 
-    return stepfunctions
-        .listStateMachines({})
-        .promise()
-        .then(listStateMachines => {
-            console.log('Searching for the step function', listStateMachines);
+    console.log('Start execution');
+    return stepfunctions.startExecution(params).promise().then(() => {
+        return true;
+    }).catch(error => {
+        console.log(error);
+        return false;
+    });
 
-            for (let i = 0; i < listStateMachines.stateMachines.length; i++) {
-                const item = listStateMachines.stateMachines[i];
-
-                if (item.name.indexOf(stateMachineName) >= 0) {
-                    console.log('Found the step function', item);
-
-                    let params = {
-                        stateMachineArn: item.stateMachineArn,
-                        input: JSON.stringify(resizeParams)
-                    };
-
-                    console.log('Start execution');
-                    return stepfunctions.startExecution(params).promise().then(() => {
-                        return true;
-                    });
-                }
-            }
-        })
-        .catch(error => {
-            return false;
-        });
 }
 
 module.exports.generateThumbnail = (event, context, callback) => {
@@ -88,11 +89,13 @@ module.exports.generateThumbnail = (event, context, callback) => {
     const width = parseInt(event.width, 10);
     const height = parseInt(event.height, 10);
     let newKey = key.replace(/(\.[\w\d_-]+)$/i, '_' + width + 'x' + height + '$1');
+    newKey = newKey.replace(/raw\//i, '');
 
+    console.log("New key is: " + newKey)
 
     S3.getObject({Bucket: bucket, Key: key}).promise()
         .then(data => Sharp(data.Body)
-            .resize(width, height)
+            .max(width, height)
             .toFormat('png')
             .toBuffer()
         )

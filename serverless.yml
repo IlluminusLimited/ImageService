@@ -19,31 +19,38 @@ provider:
         - "*"
 
 custom:
+  # if the bucket name is changed then you must go to the resources section and change it there too!
+  # This is a stupid limitation of serverless
+  # https://github.com/serverless/serverless/issues/2486
+  # https://github.com/serverless/serverless/issues/2749
   imageUploaderBucket: test-image-service-new-bucket-test
 
 functions:
   new-image-uploader:
     handler: new-image-uploader/index.upload
     events:
-      - http: POST images/upload
+      - http:
+          method: post
+          path: images/upload
+          cors: true
     memorySize: 256 # In MB
     environment:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
   startExecution:
-    handler: thumbnail-processor/handler.start
+    handler: thumbnail-processor/handler.startExecution
     events:
       - s3:
-        bucket: ${self:custom.imageUploaderBucket}
-        event: s3:ObjectCreated:*
+          bucket: ${self:custom.imageUploaderBucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: raw/
     memorySize: 128 # In MB
     environment:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
-  generate-thumbnail:
+  generateThumbnail:
     handler: thumbnail-processor/handler.generateThumbnail
-    environment:
-      STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
 stepFunctions:
   stateMachines:
@@ -60,16 +67,19 @@ stepFunctions:
 
 resources:
   Resources:
-    S3Bucket:
+  # if the bucket name is changed then this resource name must be changed! This is a stupid limitation of serverless
+  # https://github.com/serverless/serverless/issues/2486
+  # https://github.com/serverless/serverless/issues/2749
+    S3BucketTestimageservicenewbuckettest:
       Type: 'AWS::S3::Bucket'
       Properties:
-        BucketName: ${self:custom.imageUploaderBucket}
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders: ['*']
               AllowedMethods: [GET, PUT, POST, HEAD]
               AllowedOrigins: ['*']
               MaxAge: '3600'
+
   Outputs:
     ThumbnailProcessor:
       Description: The ARN of the ThumbnailProcessor state machine
