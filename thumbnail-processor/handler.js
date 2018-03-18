@@ -79,7 +79,6 @@ function callStepFunction(resizeParams) {
         console.log(error);
         return false;
     });
-
 }
 
 module.exports.generateThumbnail = (event, context, callback) => {
