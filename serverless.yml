@@ -36,6 +36,7 @@ functions:
       - s3:
         bucket: ${self:custom.imageUploaderBucket}
         event: s3:ObjectCreated:*
+    memorySize: 128 # In MB
     environment:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
@@ -46,7 +47,7 @@ functions:
 
 stepFunctions:
   stateMachines:
-    hellostepfunc1:
+    thumbnailProcessor:
       name: thumbnailProcessor
       definition:
         Comment: "StateMachine that turns raw images into thumbnails"
