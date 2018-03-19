@@ -93,7 +93,7 @@ stepFunctions:
           GenerateThumbnail:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-generateThumbnail"
-            End: true
+            Next: NotifyIntegrations
           NotifyIntegrations:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify"
