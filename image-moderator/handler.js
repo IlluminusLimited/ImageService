@@ -22,7 +22,16 @@ module.exports.moderate = (event, context, callback) => {
     rekognition.detectModerationLabels(params).promise()
         .then(result => {
             console.log("The rekognition result:", util.inspect(result, {depth: 5}));
+            if(result['ModerationLabels'].length > 0) {
+                callback(new ModerationThresholdExceeded(result))
+            }
             callback(null, result);
         })
         .catch(err => callback(err))
 };
+
+function ModerationThresholdExceeded(message) {
+    this.name = "ModerationThresholdExceeded";
+    this.message = message;
+}
+ModerationThresholdExceeded.prototype = new Error();
