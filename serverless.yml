@@ -3,6 +3,8 @@ service: image-service
 provider:
   name: aws
   runtime: nodejs6.10
+  stage: ${opt:stage, self:custom.defaultStage}
+  profile: ${self:custom.profiles.${self:provider.stage}}
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -25,11 +27,16 @@ provider:
         - "*"
 
 custom:
+  defaultStage: dev
+  profiles:
+    dev: dev
+    prod: prod
+
   # if the bucket name is changed then you must go to the resources section and change it there too!
   # This is a stupid limitation of serverless
   # https://github.com/serverless/serverless/issues/2486
   # https://github.com/serverless/serverless/issues/2749
-  imageUploaderBucket: test-image-service-new-bucket-test
+  imageUploaderBucket: pinster-image-service
 
 functions:
   newImageUploader:
@@ -56,7 +63,7 @@ functions:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
   generateThumbnail:
-    handler: image-manipulators.generateThumbnail
+    handler: image-manipulator.generateThumbnail
     memorySize: 128
 
   moderate:
@@ -64,7 +71,7 @@ functions:
     memorySize: 128
 
   notify:
-    handler: integrators.notify
+    handler: integrator.notify
     memorySize: 128
 
 stepFunctions:
@@ -82,12 +89,12 @@ stepFunctions:
             Catch:
             - ErrorEquals:
               - ModerationThresholdExceeded
-              Next: NotifyPinsterBase
+              Next: NotifyIntegrations
           GenerateThumbnail:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-generateThumbnail"
             End: true
-          NotifyPinsterBase:
+          NotifyIntegrations:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify"
             End: true
@@ -97,7 +104,7 @@ resources:
   # if the bucket name is changed then this resource name must be changed! This is a stupid limitation of serverless
   # https://github.com/serverless/serverless/issues/2486
   # https://github.com/serverless/serverless/issues/2749
-    S3BucketTestimageservicenewbuckettest:
+    S3BucketPinsterimageservice:
       Type: 'AWS::S3::Bucket'
       Properties:
         CorsConfiguration:
