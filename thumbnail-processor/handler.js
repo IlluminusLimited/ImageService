@@ -4,19 +4,9 @@ const AWS = require('aws-sdk');
 const S3 = new AWS.S3({
     signatureVersion: 'v4',
 });
-
+const util = require('util');
 const stepfunctions = new AWS.StepFunctions();
-
 const Sharp = require('sharp');
-
-const BUCKET = process.env.BUCKET;
-const URL = process.env.URL;
-const ALLOWED_DIMENSIONS = new Set();
-
-if (process.env.ALLOWED_DIMENSIONS) {
-    const dimensions = process.env.ALLOWED_DIMENSIONS.split(/\s*,\s*/);
-    dimensions.forEach((dimension) => ALLOWED_DIMENSIONS.add(dimension));
-}
 
 
 module.exports.startExecution = (event, context, callback) => {
@@ -68,6 +58,8 @@ function callStepFunction(resizeParams) {
 }
 
 module.exports.generateThumbnail = (event, context, callback) => {
+    console.log(util.inspect(event, {depth: 5}));
+
     const format = 'jpeg';
     const key = event.Key;
     const bucket = event.Bucket;

@@ -4,6 +4,8 @@ const util = require('util');
 const request = require('request');
 
 module.exports.notify = (event, context, callback) => {
+    console.log(util.inspect(event, {depth: 5}));
+
     callback(null, "success")
     // request.post('http://example.com')
     //     .on('response').promise()
