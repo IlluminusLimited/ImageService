@@ -1,6 +1,6 @@
-const Base64Handler = require('../new-image-uploader/base64-handler');
+const Base64Handler = require('./base64-handler');
 
-class RequestHandler {
+module.exports = class RequestHandler {
     static parseRequest(event, callback) {
         let data = JSON.parse(event.body)['data'];
         let image = data["image"];
@@ -48,6 +48,4 @@ class RequestHandler {
 
         fileWriter.saveObject(callback, params);
     }
-}
-
-module.exports = RequestHandler;
+};

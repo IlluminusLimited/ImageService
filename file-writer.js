@@ -1,4 +1,4 @@
-class FileWriter {
+module.exports = class FileWriter {
     constructor(s3) {
         this.s3 = s3;
     }
@@ -23,6 +23,4 @@ class FileWriter {
         });
     }
 
-}
-
-module.exports = FileWriter;
+};

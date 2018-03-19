@@ -1,6 +1,6 @@
 const md5 = require('md5');
 
-class FileBuilder {
+module.exports = class FileBuilder {
     getFile(fileMime, buffer, bucketName, metadata) {
         let fileExt = fileMime.ext;
 
@@ -17,6 +17,4 @@ class FileBuilder {
             Metadata: metadata
         };
     }
-}
-
-module.exports = FileBuilder;
+};

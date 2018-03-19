@@ -1,6 +1,6 @@
 const fileType = require('file-type');
 
-class Base64Handler {
+module.exports = class Base64Handler {
     static getBuffer(prunedBase64String) {
         return Buffer.from(prunedBase64String, 'base64');
     }
@@ -18,6 +18,5 @@ class Base64Handler {
 
         return fileMime;
     }
-}
+};
 
-module.exports = Base64Handler;
