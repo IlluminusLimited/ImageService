@@ -45,11 +45,18 @@ To run the tests, make sure you have deployed to dev and then run `npm test`
 
 ### Configuring your environment
 
+#### Runtimes
+* Ruby > 2.1 (for deploying)
+* Nodejs ~6.10
+  * [Serverless](https://serverless.com/framework/docs/getting-started/)
+
+To get all the dependencies run `npm install`
+
+#### Credentials
 In order to deploy, you will need to have aws credentials on your local machine.
 In whatever aws account you have, make a user by 
 [following this guide](https://serverless.com/framework/docs/providers/aws/guide/credentials/)
 and then save those credentials into your `./aws/credentials` file under a profile of either `dev` or `prod`
-
 
 ### Actual Deployment Instructions
 
@@ -61,13 +68,12 @@ To deploy, run `ruby serverless.rb deploy _stage_` where `_stage_` is either `de
 * *This could fail if the bucket configured in `serverless_template.yml` already exists elsewhere
 as bucket names are global.*
 
-
 The downside of this is that `serverless.yml` cannot be saved in the project and must be generated from
  `serverless_template.yml`
 
 ## Un-deploying
 
-Don't forget to empty the image upload bucket of files before you tear it down, otherwise the removal will fail
+Don't forget to empty the image upload bucket of files before you tear it down, otherwise the removal will fail.
 I may add support for this to `serverless.rb` but it will need to be refactored first.
 
 ## Credits:
@@ -79,3 +85,6 @@ I may add support for this to `serverless.rb` but it will need to be refactored 
 * Serverless blog: [Step functions with Serverless Framework](https://serverless.com/blog/how-to-manage-your-aws-step-functions-with-serverless/)
 
 * How to resize images in AWS lambda: [https://github.com/awslabs/serverless-image-resizing](https://github.com/awslabs/serverless-image-resizing)
+
+* [Aws labs examples](https://github.com/awslabs/aws-serverless-workshops/tree/master/ImageProcessing)
+
