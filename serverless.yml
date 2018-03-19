@@ -32,14 +32,14 @@ custom:
   imageUploaderBucket: test-image-service-new-bucket-test
 
 functions:
-  new-image-uploader:
+  newImageUploader:
     handler: image-uploader.upload
     events:
       - http:
           method: post
           path: images/upload
           cors: true
-    memorySize: 256 # In MB
+    memorySize: 128
     environment:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
@@ -51,18 +51,21 @@ functions:
           event: s3:ObjectCreated:*
           rules:
             - prefix: raw/
-    memorySize: 128 # In MB
+    memorySize: 128
     environment:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
   generateThumbnail:
     handler: image-manipulators.generateThumbnail
+    memorySize: 128
 
   moderate:
     handler: moderator.moderate
+    memorySize: 128
 
   notify:
     handler: integrators.notify
+    memorySize: 128
 
 stepFunctions:
   stateMachines:

@@ -7,7 +7,7 @@ let LambdaTester = require('lambda-tester');
 
 let newImageUploaderLambda = require('../image-uploader').upload;
 
-describe('new-image-uploader lambda', function () {
+describe('newImageUploader lambda', function () {
     it('Lambda actually works', function () {
         return LambdaTester(newImageUploaderLambda)
             .event({
