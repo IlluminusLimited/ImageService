@@ -8,8 +8,7 @@ module.exports.notify = (event, context, callback) => {
         .on('response').promise()
         .then(response => {
             console.log("Response:\n", util.inspect(response, {depth: 5}));
-            let message = JSON.parse(response);
-            callback(null, message)
+            callback(null, JSON.parse(response))
         })
         .on('error').promise()
         .then(err => callback(err));

@@ -18,6 +18,12 @@ provider:
       Resource:
         - "*"
 
+    - Effect: "Allow"
+      Action:
+        - "rekognition:*"
+      Resource:
+        - "*"
+
 custom:
   # if the bucket name is changed then you must go to the resources section and change it there too!
   # This is a stupid limitation of serverless
@@ -64,7 +70,7 @@ stepFunctions:
       name: thumbnailProcessor
       definition:
         Comment: "StateMachine that turns raw images into thumbnails"
-        StartAt: GenerateThumbnail
+        StartAt: Moderate
         States:
           Moderate:
             Type: Task

@@ -5,7 +5,7 @@ const rekognition = new AWS.Rekognition();
 const util = require('util');
 
 module.exports.moderate = (event, context, callback) => {
-    console.log(event);
+    console.log(util.inspect(event, {depth: 5}));
 
     let params = {
         Image: {
@@ -21,6 +21,8 @@ module.exports.moderate = (event, context, callback) => {
 
     rekognition.detectModerationLabels(params).promise()
         .then(result => {
-            console.log("The rekognition result:\n", util.inspect(event, {depth: 5}))
-        }).catch(err => callback(err))
+            console.log("The rekognition result:", util.inspect(result, {depth: 5}));
+            callback(null, result);
+        })
+        .catch(err => callback(err))
 };
