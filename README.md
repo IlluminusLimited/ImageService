@@ -1,6 +1,17 @@
 # Pinster - ImageService
 
 
+## Testing
+To run the tests, make sure you have deployed to dev and
+
+## Deploying
+
+Since serverless framework doesn't support programmatic changing of yaml keys with their templating
+engine, I wrote a [script](serverless.rb) to handle this for me. It is rudimentary but effective.
+
+The downside of this is that `serverless.yml` cannot be saved in the project and must be generated from
+ `serverless_template.yml`
+
 ### Credits:
 
 * Foo Bar videos: 
