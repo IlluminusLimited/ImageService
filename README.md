@@ -43,10 +43,24 @@ To run the tests, make sure you have deployed to dev and then run `npm test`
 
 ## Deploying
 
-To deploy, run `ruby serverless.rb deploy _stage_` where `_stage_` is either `dev` or `prod`
+### Configuring your environment
+
+In order to deploy, you will need to have aws credentials on your local machine.
+In whatever aws account you have, make a user by 
+[following this guide](https://serverless.com/framework/docs/providers/aws/guide/credentials/)
+and then save those credentials into your `./aws/credentials` file under a profile of either `dev` or `prod`
+
+
+### Actual Deployment Instructions
 
 Since serverless framework doesn't support programmatic changing of yaml keys with their templating
 engine, I wrote a [script](serverless.rb) to handle this for me. It is rudimentary but effective.
+
+To deploy, run `ruby serverless.rb deploy _stage_` where `_stage_` is either `dev` or `prod`
+    
+* *This could fail if the bucket configured in `serverless_template.yml` already exists elsewhere
+as bucket names are global.*
+
 
 The downside of this is that `serverless.yml` cannot be saved in the project and must be generated from
  `serverless_template.yml`
@@ -56,7 +70,7 @@ The downside of this is that `serverless.yml` cannot be saved in the project and
 Don't forget to empty the image upload bucket of files before you tear it down, otherwise the removal will fail
 I may add support for this to `serverless.rb` but it will need to be refactored first.
 
-### Credits:
+## Credits:
 
 * Foo Bar videos: 
   * [AWS Step Functions](https://www.youtube.com/watch?v=9MKL5Jr2zZ4&list=PLGyRwGktEFqd_YBnm5Zxzw9GP1OnEFO_U)
