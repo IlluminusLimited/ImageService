@@ -1,9 +1,17 @@
 require 'yaml'
 
-stage = ARGV[0]
+serverless_command = ARGV[0]
+
+
+unless serverless_command
+  puts "\n\nServerless command argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
+  return
+end
+
+stage = ARGV[1]
 
 unless stage
-  puts "\n\nStage argument is required! Command should be used like so:\nruby deploy.rb stage\n\n"
+  puts "\n\nStage argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
   return
 end
 
@@ -29,8 +37,7 @@ s3_name = 'S3Bucket' + bucket_name.gsub('-', '').capitalize
 puts "Looking for resource name starting with: #{s3_name}"
 
 puts "Looking through keys: #{serverless['resources']['Resources'].keys}"
-found_keys = serverless['resources']['Resources'].keys.select{ |key| /#{s3_name}.*/.match(key)}
-
+found_keys = serverless['resources']['Resources'].keys.select {|key| /#{s3_name}.*/.match(key)}
 
 
 if found_keys.size > 1
@@ -57,16 +64,23 @@ serverless['resources']['Resources'][new_s3_name] = serverless['resources']['Res
 
 puts "Writing new serverless.yml"
 
+warning_message = <<-WARNING
+  # Comments are not retained in this file, they will be lost
+  # The reason this file's comments are not retained is because of deploy.rb and
+  # A stupid limitation of serverless where keys can't be changed with variable substitutions
+  # https://github.com/serverless/serverless/issues/2486
+  # https://github.com/serverless/serverless/issues/2749
+WARNING
 File.open('serverless.yml', 'w') {|file| file.write(serverless.to_yaml)}
 
 puts "\nDone!\n"
 
-puts "\nCalling sls deploy!\n\n"
+puts "\nCalling Serverless with command: #{serverless_command} \n\n"
 
 output = []
 r, io = IO.pipe
 fork do
-  system("sls deploy --stage #{stage} -v", out: io, err: :out)
+  system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
 end
 io.close
-r.each_line{|l| puts l; output << l.chomp}
+r.each_line {|l| puts l; output << l.chomp}
