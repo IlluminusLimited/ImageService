@@ -2,7 +2,6 @@ require 'yaml'
 
 serverless_command = ARGV[0]
 
-
 unless serverless_command
   puts "\n\nServerless command argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
   return
@@ -26,17 +25,22 @@ puts "\nBuilding serverless.yml from serverless_template.yml with correct bucket
 serverless = YAML.load_file('serverless_template.yml')
 bucket_name = serverless['custom']['imageUploaderBucket']
 
+unless bucket_name
+  puts "\n\nFailed to find the uploader bucket in the serverless_template.yml file.\n\n"
+  return
+end
+
 puts "Found Bucket name: #{bucket_name}"
 
 supported_stages.each {|supported_stage| bucket_name.gsub!(/-?#{supported_stage}\Z/, '')}
 
-puts "Trimmed bucket name to not include stage suffix: #{bucket_name}"
+# puts "Trimmed bucket name to not include stage suffix: #{bucket_name}"
 
 s3_name = 'S3Bucket' + bucket_name.gsub('-', '').capitalize
 
 puts "Looking for resource name starting with: #{s3_name}"
 
-puts "Looking through keys: #{serverless['resources']['Resources'].keys}"
+# puts "Looking through keys: #{serverless['resources']['Resources'].keys}"
 found_keys = serverless['resources']['Resources'].keys.select {|key| /#{s3_name}.*/.match(key)}
 
 
@@ -49,8 +53,6 @@ if found_keys.size < 1
   puts "\nFailed to find a resource matching: \"#{s3_name}\". Found Keys: #{found_keys}\n\n"
   return
 end
-
-puts "Changing values to match stage #{stage}"
 
 new_bucket_name = bucket_name + "-#{stage}"
 
@@ -74,7 +76,7 @@ warning_message = <<-WARNING
 WARNING
 File.open('serverless.yml', 'w') {|file| file.write(warning_message + serverless.to_yaml)}
 
-puts "\nCalling Serverless with command: #{serverless_command} \n\n"
+puts "\nCalling Serverless with command: #{serverless_command}\n\n"
 
 output = []
 r, io = IO.pipe
