@@ -21,27 +21,18 @@ script:
   - "npm test"
 
 before_deploy:
-  - "cd ${TRAVIS_BUILD_DIR}"
+  - "cd ${TRAVIS_BUILD_DIR} && pwd"
 
 deploy: 
   - 
     provider: script
-    script:
-      - "cd ${TRAVIS_BUILD_DIR}"
-      - "ruby serverless.rb package prod false"
-      - "make all"
-      - "sls deploy --package .serverless"
+    script: "etc/deploy-prod.sh"
     skip_cleanup: true
     on:
       branch: master
   - 
     provider: script
-    script:
-      - "cd ${TRAVIS_BUILD_DIR}"
-      - "ruby serverless.rb package dev false"
-      - "make all"
-      - "sls deploy --package .serverless"
-
+    script: "etc/deploy-dev.sh"
     skip_cleanup: true
     on:
       branch: develop
