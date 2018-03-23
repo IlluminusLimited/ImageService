@@ -4,10 +4,10 @@ module.exports = class FileWriter {
     }
 
     saveObject(callback, params) {
-        this.s3.putObject(params, function (err, data) {
+        this.s3.putObject(params, (err, data) => {
             if (err) {
                 console.log(err, err.stack);
-                return callback(err);
+                callback(err);
             }
 
             let response = {
@@ -19,7 +19,7 @@ module.exports = class FileWriter {
                 })
             };
 
-            return callback(null, response);
+            callback(null, response);
         });
     }
 

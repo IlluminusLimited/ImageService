@@ -29,7 +29,7 @@ module.exports = class RequestHandler {
                     }
                 })
             };
-            return callback(response)
+            callback(response)
         }
 
         return {

@@ -46,7 +46,7 @@ functions:
           method: post
           path: images/upload
           cors: true
-    memorySize: 128
+    memorySize: 1024
     environment:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
@@ -64,7 +64,7 @@ functions:
 
   generateThumbnail:
     handler: image-manipulator.generateThumbnail
-    memorySize: 128
+    memorySize: 1024
 
   moderate:
     handler: moderator.moderate

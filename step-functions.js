@@ -19,7 +19,7 @@ module.exports.startExecution = (event, context, callback) => {
 
     callStepFunction(resizeParams).then(result => {
         if (!result) {
-            return callback("Failed to execute step function");
+            callback("Failed to execute step function");
         }
 
         const response = {
