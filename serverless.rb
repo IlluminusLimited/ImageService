@@ -1,7 +1,6 @@
 require 'yaml'
 
 serverless_command = ARGV[0]
-use_aws_credentials_file = true
 
 unless serverless_command
   puts "\n\nServerless command argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
@@ -15,6 +14,7 @@ unless stage
   return
 end
 
+# We will always use the credentials file unless ARGV[2] is explicitly set to 'false' like in the .travis.yml file
 use_aws_credentials_file = ARGV[2] != 'false'
 
 supported_stages = %w[dev prod]
