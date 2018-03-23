@@ -20,19 +20,17 @@ before_script:
 script:
   - "npm test"
 
-before_deploy:
-  - "cd ${TRAVIS_BUILD_DIR} && pwd"
 
 deploy: 
   - 
     provider: script
-    script: "etc/deploy-prod.sh"
+    script: "bash ${TRAVIS_BUILD_DIR}/etc/deploy-prod.sh"
     skip_cleanup: true
     on:
       branch: master
   - 
     provider: script
-    script: "etc/deploy-dev.sh"
+    script: "bash ${TRAVIS_BUILD_DIR}/etc/deploy-dev.sh"
     skip_cleanup: true
     on:
       branch: develop
