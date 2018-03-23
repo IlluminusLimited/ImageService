@@ -19,12 +19,15 @@ before_script:
 
 script:
   - "npm test"
-  - "cd .."
+
+before_deploy:
+  - "cd ${TRAVIS_BUILD_DIR}"
 
 deploy: 
   - 
     provider: script
-    script: 
+    script:
+      - "cd ${TRAVIS_BUILD_DIR}"
       - "ruby serverless.rb package prod false"
       - "make all"
       - "sls deploy --package .serverless"
@@ -33,7 +36,8 @@ deploy:
       branch: master
   - 
     provider: script
-    script: 
+    script:
+      - "cd ${TRAVIS_BUILD_DIR}"
       - "ruby serverless.rb package dev false"
       - "make all"
       - "sls deploy --package .serverless"
