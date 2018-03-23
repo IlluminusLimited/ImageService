@@ -17,6 +17,7 @@ before_deploy:
   - ruby serverless.rb package prod false
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: sls deploy
   on:
