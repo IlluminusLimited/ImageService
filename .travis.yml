@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+- node
+cache:
+  directories:
+    - node_modules
+
+before_script:
+  - npm install -g serverless
+
+script:
+  - npm test
+
+before_deploy:
+  - ruby serverless.rb package prod false
+
+deploy:
+  provider: script
+  script: sls deploy
+  on:
+    branch: master

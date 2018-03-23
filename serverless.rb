@@ -1,6 +1,7 @@
 require 'yaml'
 
 serverless_command = ARGV[0]
+call_serverless = true
 
 unless serverless_command
   puts "\n\nServerless command argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
@@ -13,6 +14,10 @@ unless stage
   puts "\n\nStage argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
   return
 end
+
+call_serverless = true
+call_serverless_string = ARGV[2]
+call_serverless = false if call_serverless_string == 'false'
 
 supported_stages = %w[dev prod]
 
@@ -76,12 +81,17 @@ warning_message = <<-WARNING
 WARNING
 File.open('serverless.yml', 'w') {|file| file.write(warning_message + serverless.to_yaml)}
 
-puts "\nCalling Serverless with command: #{serverless_command}\n\n"
 
-output = []
-r, io = IO.pipe
-fork do
-  system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
+if call_serverless
+  puts "\nCalling Serverless with command: #{serverless_command}\n\n"
+
+  output = []
+  r, io = IO.pipe
+  fork do
+    system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
+  end
+  io.close
+  r.each_line {|l| puts l; output << l.chomp}
+else
+  puts "\nDone!\n"
 end
-io.close
-r.each_line {|l| puts l; output << l.chomp}
