@@ -13,8 +13,8 @@ cache:
 
 before_script:
   - "npm install -g serverless"
-script:
-  - "(cd lambda && npm test)"
+
+script: "build.sh"
 
 deploy: 
   - 
