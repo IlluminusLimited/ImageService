@@ -1,0 +1,14 @@
+{
+  "name": "image-service-serverless-dependencies",
+  "version": "1.0.0",
+  "description": "Image Service serverless dependencies for Pinster",
+  "repository": "https://github.com/PinsterTeam/image-service",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless": "^1.26.1",
+    "serverless-pseudo-parameters": "^1.4.2",
+    "serverless-step-functions": "^1.3.0"
+  },
+  "author": "Andrew Newell",
+  "license": "ISC"
+}
