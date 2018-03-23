@@ -12,6 +12,7 @@ cache:
     - node_modules
 
 before_install:
+  - "npm install"
   - "cd lambda"
 
 script:
@@ -19,18 +20,17 @@ script:
 
 before_deploy:
   - "cd ${TRAVIS_BUILD_DIR}"
-  - "npm install"
 
 deploy: 
   - 
     provider: script
-    script: "bash ${TRAVIS_BUILD_DIR}/etc/deploy-prod.sh"
+    script: "bash ${TRAVIS_BUILD_DIR}/deploy.sh prod"
     skip_cleanup: true
     on:
       branch: master
   - 
     provider: script
-    script: "bash ${TRAVIS_BUILD_DIR}/etc/deploy-dev.sh"
+    script: "bash ${TRAVIS_BUILD_DIR}/deploy.sh dev"
     skip_cleanup: true
     on:
       branch: develop
