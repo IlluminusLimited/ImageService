@@ -1,21 +1,35 @@
 language: node_js
+
 dist: trusty
 sudo: false
+
 node_js:
-- node
+  - node
+
 cache:
   directories:
     - node_modules
 script:
-  - npm test
+  - "npm test"
 
-before_deploy:
-  - npm install -g serverless
-  - ruby serverless.rb package prod false
+before_deploy: 
+  - "npm install -g serverless"
 
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: sls deploy --stage prod
-  on:
-    branch: master
+deploy: 
+  - 
+    provider: script
+    script: 
+      - "ruby serverless.rb package prod false"
+      - "sls deploy --stage prod"
+    skip_cleanup: true
+    on:
+      branch: master
+  - 
+    provider: script
+    script: 
+      - "ruby serverless.rb package dev false"
+      - "sls deploy --stage dev"
+    skip_cleanup: true
+    on:
+      branch: develop
+
