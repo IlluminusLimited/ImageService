@@ -10,18 +10,19 @@ node_js:
 cache:
   directories:
     - node_modules
+
+before_script:
+  - "npm install -g serverless"
 script:
   - "npm test"
-
-before_deploy: 
-  - "npm install -g serverless"
 
 deploy: 
   - 
     provider: script
     script: 
       - "ruby serverless.rb package prod false"
-      - "sls deploy --stage prod"
+      - "make all"
+      - "sls deploy --package .serverless"
     skip_cleanup: true
     on:
       branch: master
@@ -29,7 +30,9 @@ deploy:
     provider: script
     script: 
       - "ruby serverless.rb package dev false"
-      - "sls deploy --stage dev"
+      - "make all"
+      - "sls deploy --package .serverless"
+
     skip_cleanup: true
     on:
       branch: develop

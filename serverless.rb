@@ -1,7 +1,7 @@
 require 'yaml'
 
 serverless_command = ARGV[0]
-call_serverless = true
+use_aws_credentials_file = true
 
 unless serverless_command
   puts "\n\nServerless command argument is required! Command should be used like so:\nruby serverless.rb command stage\n\n"
@@ -15,9 +15,7 @@ unless stage
   return
 end
 
-call_serverless = true
-call_serverless_string = ARGV[2]
-call_serverless = false if call_serverless_string == 'false'
+use_aws_credentials_file = ARGV[2] != 'false'
 
 supported_stages = %w[dev prod]
 
@@ -70,8 +68,9 @@ puts "New s3 resource name: #{new_s3_name}"
 serverless['resources']['Resources'][new_s3_name] = serverless['resources']['Resources'].delete(found_keys.first)
 
 
-unless call_serverless
-  puts "Deleted profile statement to not corrupt sls deploy #{serverless['provider'].delete('profile')}"
+unless use_aws_credentials_file
+  serverless['provider'].delete('profile')
+  puts "Deleted profile statement to not corrupt sls deploy"
 end
 
 puts "Writing new serverless.yml"
@@ -86,17 +85,12 @@ warning_message = <<-WARNING
 WARNING
 File.open('serverless.yml', 'w') {|file| file.write(warning_message + serverless.to_yaml)}
 
+puts "\nCalling Serverless with command: #{serverless_command}\n\n"
 
-if call_serverless
-  puts "\nCalling Serverless with command: #{serverless_command}\n\n"
-
-  output = []
-  r, io = IO.pipe
-  fork do
-    system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
-  end
-  io.close
-  r.each_line {|l| puts l; output << l.chomp}
-else
-  puts "\nDone!\n"
+output = []
+r, io = IO.pipe
+fork do
+  system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
 end
+io.close
+r.each_line {|l| puts l; output << l.chomp}
