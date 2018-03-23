@@ -69,6 +69,11 @@ new_s3_name = 'S3Bucket' + bucket_name.gsub('-', '').capitalize + stage
 puts "New s3 resource name: #{new_s3_name}"
 serverless['resources']['Resources'][new_s3_name] = serverless['resources']['Resources'].delete(found_keys.first)
 
+
+unless call_serverless
+  puts "Deleted profile statement to not corrupt sls deploy #{serverless['provider'].delete('profile')}"
+end
+
 puts "Writing new serverless.yml"
 
 warning_message = <<-WARNING
