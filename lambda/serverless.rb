@@ -90,7 +90,7 @@ puts "\nCalling Serverless with command: #{serverless_command}\n\n"
 output = []
 r, io = IO.pipe
 fork do
-  system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
+  system("serverless #{serverless_command} --stage #{stage} -v", out: io, err: :out)
 end
 io.close
 r.each_line {|l| puts l; output << l.chomp}
