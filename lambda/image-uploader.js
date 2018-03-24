@@ -8,5 +8,5 @@ const RequestHandler = require('./request-handler');
 
 module.exports.upload = (event, context, callback) => {
     let bucket = process.env['BUCKET_NAME'];
-    RequestHandler.perform(event, context, callback, new FileBuilder(), new FileWriter(new AWSS3()),bucket );
+    RequestHandler.perform(event, context, callback, new FileBuilder(), new FileWriter(new AWSS3()), bucket);
 };

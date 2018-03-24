@@ -63,7 +63,7 @@ and then save those credentials into your `./aws/credentials` file under a profi
 ### Actual Deployment Instructions
 
 Since serverless framework doesn't support programmatic changing of yaml keys with their templating
-engine, I wrote a [script](serverless.rb) to handle this for me. It is rudimentary but effective.
+engine, I wrote a [script](lambda/serverless.rb) to handle this for me. It is rudimentary but effective.
 
 To deploy, run `ruby serverless.rb deploy _stage_` where `_stage_` is either `dev` or `prod`
     
