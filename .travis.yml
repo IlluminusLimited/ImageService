@@ -33,5 +33,5 @@ deploy:
     script: "bash ${TRAVIS_BUILD_DIR}/deploy.sh dev"
     skip_cleanup: true
     on:
-      branch: develop
+      branch: "newell/develop"
 
