@@ -39,7 +39,7 @@ custom:
     dev: dev
     prod: prod
   customDomain:
-    domainName: api-${self:provider.stage}.pinster.info
+    domainName: api.pinster.info
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
