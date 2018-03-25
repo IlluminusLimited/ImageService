@@ -12,7 +12,6 @@ cache:
     - node_modules
 
 before_install:
-  - "npm install"
   - "cd lambda"
 
 script:
