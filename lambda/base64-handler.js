@@ -10,13 +10,12 @@ module.exports = class Base64Handler {
     }
 
     static getMimeType(buffer, callback) {
-        let fileMime = fileType(buffer);
-
-        if (fileMime === null) {
+        let mimeType = fileType(buffer);
+        if (mimeType === null) {
             callback('The string supplied is not a file type');
         }
-
-        return fileMime;
+        else {
+            callback(undefined, mimeType);
+        }
     }
 };
-
