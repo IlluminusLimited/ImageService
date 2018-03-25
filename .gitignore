@@ -11,3 +11,5 @@ serverless.yml
 
 # JetBrains
 .idea/
+
+*package-lock.json
