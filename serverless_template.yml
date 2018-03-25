@@ -5,6 +5,13 @@ provider:
   runtime: nodejs6.10
   stage: ${opt:stage, self:custom.defaultStage}
   profile: ${self:custom.profiles.${self:provider.stage}, default}
+  deploymentBucket:
+      name: pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}, default}
+  package:
+    exclude:
+      - .git/**
+      - .travis.yml
+      - lambda/test
 
   iamRoleStatements:
     - Effect: "Allow"
