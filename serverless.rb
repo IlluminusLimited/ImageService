@@ -87,10 +87,13 @@ File.open('serverless.yml', 'w') {|file| file.write(warning_message + serverless
 
 puts "\nCalling Serverless with command: #{serverless_command}\n\n"
 
+return_code = nil
 output = []
 r, io = IO.pipe
 fork do
-  system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
+ return_code = system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
 end
 io.close
 r.each_line {|l| puts l; output << l.chomp}
+
+raise 'Serverless command failed!' if return_code
