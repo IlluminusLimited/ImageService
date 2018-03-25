@@ -18,7 +18,6 @@ provider:
       Action:
         - "s3:*"
       Resource:
-        - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
         - "arn:aws:s3:::${self:custom.imageUploaderBucket}/*"
 
     - Effect: "Allow"
