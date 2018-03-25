@@ -20,7 +20,6 @@ script:
 
 before_deploy:
   - "cd ${TRAVIS_BUILD_DIR}"
-  - "npm install -g serverless serverless-pseudo-parameters serverless-step-functions"
 
 deploy: 
   - 

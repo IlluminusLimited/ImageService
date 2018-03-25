@@ -1,0 +1,27 @@
+{
+  "name": "imageservice",
+  "version": "1.0.0",
+  "description": "No, don't use the readme please.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PinsterTeam/ImageService.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PinsterTeam/ImageService/issues"
+  },
+  "homepage": "https://github.com/PinsterTeam/ImageService#readme",
+  "devDependencies": {
+    "serverless": "^1.26.1",
+    "serverless-pseudo-parameters": "^1.4.2",
+    "serverless-step-functions": "^1.3.0"
+  },
+  "dependencies": {
+    "npm": "^5.8.0"
+  }
+}
