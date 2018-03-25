@@ -8,5 +8,5 @@ image:
 # AKA, use this makefile, or a bash script to call docker and run serverless commands
 
 clean:
-	rm -r lambda/node_modules
+	rm -rf lambda/node_modules
 	docker rmi --force amazonlinux:nodejs
