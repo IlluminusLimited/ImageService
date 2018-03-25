@@ -1,5 +1,8 @@
 FROM amazonlinux
 
+ARG aws_access_key_id
+ARG aws_secret_access_key
+
 ADD etc/nodesource.gpg.key /etc
 
 WORKDIR /tmp
@@ -15,3 +18,7 @@ RUN yum -y install gcc-c++ ruby && \
     rm --force ns.rpm
 
 WORKDIR /build
+
+ENV AWS_ACCESS_KEY_ID = $aws_access_key_id
+
+ENV AWS_SECRET_ACCESS_KEY = $aws_secret_access_key

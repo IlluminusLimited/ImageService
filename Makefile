@@ -3,7 +3,9 @@
 all: image
 
 image:
-	docker build --tag amazonlinux:nodejs .
+	docker build --build-arg aws_access_key_id=${AWS_ACCESS_KEY_ID} \
+	--build-arg aws_secret_access_key=${AWS_SECRET_ACCESS_KEY} \
+	--tag amazonlinux:nodejs .
 # Create the entire serverless stack inside docker and deploy it.
 # AKA, use this makefile, or a bash script to call docker and run serverless commands
 
