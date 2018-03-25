@@ -6,7 +6,7 @@ provider:
   stage: ${opt:stage, self:custom.defaultStage}
   profile: ${self:custom.profiles.${self:provider.stage}, default}
   deploymentBucket:
-      name: pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}, default}
+      name: "pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}}"
   package:
     exclude:
       - .git/**
