@@ -7,13 +7,13 @@ let base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIf
 describe("Base64 handler", function () {
     it("Gets the correct mime type", function (done) {
         Base64Handler.getMimeType(Base64Handler.getBuffer(base64Image), (err, mimeType) => {
-        	if (err) {
-        		done(err);
-        	}
-        	else {
-        		expect(mimeType).to.deep.include({ ext: 'png', mime: 'image/png' } )
-        		done();
-        	}
+            if (err) {
+                done(err);
+            }
+            else {
+                expect(mimeType).to.deep.include({ ext: 'png', mime: 'image/png' } )
+                done();
+            }
         });
     });
 
