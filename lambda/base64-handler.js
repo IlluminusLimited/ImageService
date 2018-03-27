@@ -12,7 +12,7 @@ module.exports = class Base64Handler {
     static getMimeType(buffer, callback) {
         let mimeType = fileType(buffer);
         if (mimeType === null) {
-            callback('The string supplied is not a file type');
+            callback(new Error('The string supplied is not a file type'));
         }
         else {
             callback(undefined, mimeType);
