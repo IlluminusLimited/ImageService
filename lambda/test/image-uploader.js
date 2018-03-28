@@ -1,26 +1,46 @@
 'use strict';
 
-
 let expect = require('chai').expect;
+let ImageUploader = require('../image-uploader');
+let sinon = require('sinon');
 
-let LambdaTester = require('lambda-tester');
+let goodPayload = {
+    data: {
+        metadata: {
+            user_id: "uuid",
+            year: "integer year"
+        },
+        image: "base64 encoded image"
+    }
+};
 
-let newImageUploaderLambda = require('../image-uploader').upload;
+let badYearPayload = {
+    data: {
+        metadata: {user_id: "uuid"},
+        image: "base64 encoded image"
+    }
+};
 
-describe('newImageUploader lambda', function () {
-    // it('Lambda actually works', function () {
-    //     return LambdaTester(newImageUploaderLambda)
-    //         .event({
-    //             body: JSON.stringify({
-    //                 data: {
-    //                     metadata: {
-    //                         user_id: 'asdf',
-    //                         year: "2018"
-    //                     },
-    //                     image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIfAhkiAAAAFlJREFUCJl9yjEKwCAUBNERv43g/U+WKqVVsNRKxU0jJGnyYGGLcTln1VoBSCnRWsN7D0AIATOjlEKMEbQd16kxhuac6r1rrfWZJBmbAEn8eeKlT/z+zjkAbkDFRMbggmGwAAAAAElFTkSuQmCC'
-    //                 }
-    //             })
-    //         })
-    //         .expectResult()
-    // });
+describe("ImageUploader", function () {
+    it("Correctly parses the event", function () {
+        let eventFixture = class {
+            constructor() {
+                this.body = JSON.stringify(goodPayload);
+            }
+        };
+
+        expect(ImageUploader.parseRequest(new eventFixture())).to.deep.include(goodPayload['data'])
+    });
+
+    it("Blows up on missing year", function () {
+        let eventFixture = class {
+            constructor() {
+                this.body = JSON.stringify(badYearPayload);
+            }
+        };
+        let callback = sinon.spy();
+
+        ImageUploader.parseRequest(new eventFixture(), callback);
+        expect(callback.called).to.be.true;
+    });
 });

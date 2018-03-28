@@ -63,9 +63,8 @@ module.exports = class ImageUploader {
                 callback("The parsed request contained an error");
             }
             else {
-                this.FileBuilder.getFile(parsedRequest.image, (err, imageFile) => {
-                    callback(err, parsedRequest, imageFile);
-                });
+                let imageFile = this.FileBuilder.getFile(parsedRequest.image);
+                callback(err, parsedRequest, imageFile);
             }
         });
         tasks.push((parsedRequest, imageFile, callback) => {
