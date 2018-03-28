@@ -1,5 +1,3 @@
-const fileType = require('file-type');
-
 module.exports = class Base64Handler {
     static getBuffer(prunedBase64String) {
         return Buffer.from(prunedBase64String, 'base64');
@@ -9,13 +7,12 @@ module.exports = class Base64Handler {
         return base64Image.substr(base64Image.indexOf(',') + 1)
     }
 
-    static getMimeType(buffer, callback) {
-        let mimeType = fileType(buffer);
-        if (mimeType === null) {
-            callback(new Error('The string supplied is not a file type'));
-        }
-        else {
-            callback(undefined, mimeType);
-        }
+    static getMimeType(base64Image) {
+        let mimeRegex = /data:([^/]+)\/([^;]+);/;
+        let matches = mimeRegex.exec(base64Image);
+        return {
+            mime: matches[1],
+            ext: matches[2]
+        };
     }
 };
