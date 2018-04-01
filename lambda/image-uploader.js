@@ -51,7 +51,7 @@ module.exports = class ImageUploader {
         }
     }
 
-    static perform(event, context, callback) {
+    perform(event, context, callback) {
         let tasks = [];
         tasks.push((callback) => {
             ImageUploader.parseRequest(event, callback);
