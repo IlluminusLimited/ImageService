@@ -11,8 +11,8 @@ module.exports = class Base64Handler {
         let mimeRegex = /data:([^/]+)\/([^;]+);/;
         let matches = mimeRegex.exec(base64Image);
         return {
-            mime: matches[1],
-            ext: matches[2]
+            type: matches[1],
+            subtype: matches[2]
         };
     }
 };
