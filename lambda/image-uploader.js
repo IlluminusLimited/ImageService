@@ -8,7 +8,7 @@ const _ = require('lodash');
 module.exports = class ImageUploader {
     constructor(fileBuilder, fileWriter) {
         this.FileBuilder = _.isUndefined(fileBuilder) ? new FileBuilder() : fileBuilder;
-        this.FileWriter = _.isUndefined(fileWriter) ? new FileWriter(new AWSS3) : fileWriter;
+        this.FileWriter = _.isUndefined(fileWriter) ? new FileWriter(new AWSS3()) : fileWriter;
     }
 
     static parseRequest(event, callback) {
