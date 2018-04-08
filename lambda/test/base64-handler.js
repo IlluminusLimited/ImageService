@@ -14,6 +14,9 @@ describe("Base64 handler", function () {
 
     it("Throws a regex mismatch exception", function() {
         let fakeImage = "blah";
-        expect(new Base64Handler(fakeImage)).to.throw(Base64RegexMismatch);
+        let throwTest = function() {
+            new Base64Handler(fakeImage);
+        };
+        expect(throwTest).to.throw(Base64RegexMismatch);
     });
 });
