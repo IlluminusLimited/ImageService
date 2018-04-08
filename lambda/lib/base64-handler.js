@@ -1,4 +1,4 @@
-const Base64RegexMismatch = require('base64-regex-mismatch');
+const Base64RegexMismatch = require('./base64-regex-mismatch');
 
 module.exports = class Base64Handler {
     constructor(image) {
