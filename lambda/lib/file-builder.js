@@ -1,5 +1,5 @@
 const Base64Handler = require("./base64-handler");
-const _ = ('lodash');
+const _ = require('lodash');
 const md5 = require('md5');
 
 module.exports = class FileBuilder {
