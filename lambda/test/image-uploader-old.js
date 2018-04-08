@@ -5,7 +5,7 @@ let expect = require('chai').expect;
 
 let LambdaTester = require('lambda-tester');
 
-let newImageUploaderLambda = require('../image-uploader').upload;
+let newImageUploaderLambda = require('../lib/image-uploader');
 
 describe('newImageUploader lambda', function () {
     it.skip('Lambda actually works', function () {

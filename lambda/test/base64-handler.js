@@ -1,18 +1,22 @@
 'use strict';
 
 let expect = require('chai').expect;
-let Base64Handler = require('../base64-handler');
-let base64ImageMetadata = 'data:image/png;base64,';
-let base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIfAhkiAAAAFlJREFUCJl9yjEKwCAUBNERv43g/U+WKqVVsNRKxU0jJGnyYGGLcTln1VoBSCnRWsN7D0AIATOjlEKMEbQd16kxhuac6r1rrfWZJBmbAEn8eeKlT/z+zjkAbkDFRMbggmGwAAAAAElFTkSuQmCC'
+let Base64Handler = require('../lib/base64-handler');
+let Base64RegexMismatch = require('../lib/base64-regex-mismatch');
 
 describe("Base64 handler", function () {
-    it("Gets the correct mime type", function () {
-        let mimeType = Base64Handler.getMimeType(base64ImageMetadata + base64Image);
-        expect(mimeType).to.deep.equal({type: 'image', subtype: 'png'});
+    it("Gets the correct mime type and image", function () {
+        let fakeImage = "data:test/1234;base64,testing";
+        let base64Handler = new Base64Handler(fakeImage);
+        expect(base64Handler.mimeType).to.deep.equal({type: "test", subtype: "1234"});
+        expect(base64Handler.base64Image).to.equal("testing");
     });
 
-    it("Removes everything in front of comma, inclusive", function () {
-        let fixtureString = 'something,stuff';
-        expect(Base64Handler.pruneBase64String(fixtureString)).to.equal('stuff');
+    it("Throws a regex mismatch exception", function() {
+        let fakeImage = "blah";
+        let throwTest = function() {
+            new Base64Handler(fakeImage);
+        };
+        expect(throwTest).to.throw(Base64RegexMismatch);
     });
 });

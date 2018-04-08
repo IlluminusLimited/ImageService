@@ -2,14 +2,13 @@
 
 const FileWriter = require('./file-writer');
 const FileBuilder = require('./file-builder');
-const AWSS3 = require('aws-sdk/clients/s3');
 const _ = require('lodash');
 const async = require('async');
 
 module.exports = class ImageUploader {
     constructor(fileBuilder, fileWriter) {
         this.FileBuilder = _.isUndefined(fileBuilder) ? new FileBuilder() : fileBuilder;
-        this.FileWriter = _.isUndefined(fileWriter) ? new FileWriter(new AWSS3()) : fileWriter;
+        this.FileWriter = _.isUndefined(fileWriter) ? new FileWriter() : fileWriter;
     }
 
     static parseRequest(event, callback) {
@@ -52,7 +51,7 @@ module.exports = class ImageUploader {
         }
     }
 
-    perform(event, context, callback) {
+    perform(event, callback) {
         let tasks = [];
         tasks.push((callback) => {
             ImageUploader.parseRequest(event, callback);
@@ -92,9 +91,4 @@ module.exports = class ImageUploader {
             }
         });
     }
-};
-
-module.exports.upload = (event, context, callback) => {
-    let imageUploader = new exports.ImageUploader();
-    imageUploader.perform(event, context, callback);
 };
