@@ -6,6 +6,7 @@ provider:
   region: us-east-1
   stage: ${opt:stage, self:custom.defaultStage}
   profile: ${self:custom.profiles.${self:provider.stage}, 'default'}
+  endpointType: REGIONAL
   deploymentBucket:
       name: "pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}}"
   package:
@@ -76,7 +77,12 @@ functions:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
   generateThumbnail:
-    handler: lambda/lambda.generateThumbnail
+    handler: lambda/image-manipulator.generateThumbnail
+    events:
+      - http:
+          method: get
+          path: images/resources
+          cors: true
     memorySize: 1024
 
   moderate:
@@ -126,7 +132,17 @@ resources:
               AllowedMethods: [GET, PUT, POST, HEAD]
               AllowedOrigins: ['*']
               MaxAge: '3600'
-
+        WebsiteConfiguration:
+                IndexDocument: index.html
+                RoutingRules:
+                - RedirectRule:
+                    HostName:
+                      Fn::Sub: ApiGatewayResourceImagesResources
+                    HttpRedirectCode: 307
+                    Protocol: https
+                    ReplaceKeyPrefixWith: prod?key=
+                  RoutingRuleCondition:
+                    HttpErrorCodeReturnedEquals: 404
   Outputs:
     ThumbnailProcessor:
       Description: The ARN of the ThumbnailProcessor state machine
