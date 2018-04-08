@@ -1,7 +1,7 @@
 'use strict';
 
 let expect = require('chai').expect;
-let Base64Handler = require('../base64-handler');
+let Base64Handler = require('../lib/base64-handler');
 let base64ImageMetadata = 'data:image/png;base64,';
 let base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIfAhkiAAAAFlJREFUCJl9yjEKwCAUBNERv43g/U+WKqVVsNRKxU0jJGnyYGGLcTln1VoBSCnRWsN7D0AIATOjlEKMEbQd16kxhuac6r1rrfWZJBmbAEn8eeKlT/z+zjkAbkDFRMbggmGwAAAAAElFTkSuQmCC'
 

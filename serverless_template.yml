@@ -53,7 +53,7 @@ custom:
 
 functions:
   newImageUploader:
-    handler: lambda/image-uploader.upload
+    handler: lambda/lambda.upload
     events:
       - http:
           method: post
@@ -64,7 +64,7 @@ functions:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
   startExecution:
-    handler: lambda/step-functions.startExecution
+    handler: lambda/lambda.startExecution
     events:
       - s3:
           bucket: ${self:custom.imageUploaderBucket}
@@ -76,15 +76,15 @@ functions:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
   generateThumbnail:
-    handler: lambda/image-manipulator.generateThumbnail
+    handler: lambda/lambda.generateThumbnail
     memorySize: 1024
 
   moderate:
-    handler: lambda/moderator.moderate
+    handler: lambda/lambda.moderate
     memorySize: 128
 
   notify:
-    handler: lambda/integrator.notify
+    handler: lambda/lambda.notify
     memorySize: 128
 
 stepFunctions:

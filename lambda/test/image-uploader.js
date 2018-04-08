@@ -1,7 +1,7 @@
 'use strict';
 
 let expect = require('chai').expect;
-let ImageUploader = require('../image-uploader');
+let ImageUploader = require('../lib/image-uploader');
 let sinon = require('sinon');
 
 let goodPayload = {
