@@ -44,6 +44,7 @@ custom:
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
+  imageBucketUrl: http://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
 
   # if the bucket name is changed then you must go to the resources section and change it there too!
   # This is a stupid limitation of serverless
@@ -84,6 +85,9 @@ functions:
           path: images/resources
           cors: true
     memorySize: 1024
+    environment:
+          BUCKET: ${self:custom.imageUploaderBucket}
+          URL: ${self:custom.imageBucketUrl}
 
   moderate:
     handler: lambda/lambda.moderate
