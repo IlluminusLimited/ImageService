@@ -89,8 +89,13 @@ functions:
     handler: lambda/lambda.moderate
     memorySize: 128
 
-  notify:
-    handler: lambda/lambda.notify
+
+  notifySuccess:
+    handler: lambda/integrator.notifySuccess
+    memorySize: 128
+
+  notifyFailure:
+    handler: lambda/integrator.notifyFailure
     memorySize: 128
 
 stepFunctions:
@@ -104,18 +109,18 @@ stepFunctions:
           Moderate:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-moderate"
-            Next: GenerateThumbnail
+            Next: NotifyIntegrationsSuccess
             Catch:
             - ErrorEquals:
               - ModerationThresholdExceeded
-              Next: NotifyIntegrations
-          GenerateThumbnail:
+              Next: NotifyIntegrationsFailure
+          NotifyIntegrationsSuccess:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-generateThumbnail"
-            Next: NotifyIntegrations
-          NotifyIntegrations:
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-success"
+            End: true
+          NotifyIntegrationsFailure:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify"
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-failure"
             End: true
 
 resources:
@@ -136,8 +141,8 @@ resources:
                 IndexDocument: index.html
                 RoutingRules:
                 - RedirectRule:
-                    HostName:
-                      Fn::Sub: ApiGatewayResourceImagesResources
+                    HostName: "asdfad" # this is the URL of the image resize lambda itself. So this has to be filled with cloudformation
+
                     HttpRedirectCode: 307
                     Protocol: https
                     ReplaceKeyPrefixWith: prod?key=
