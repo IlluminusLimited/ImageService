@@ -141,8 +141,7 @@ resources:
                 IndexDocument: index.html
                 RoutingRules:
                 - RedirectRule:
-                    HostName: "asdfad" # this is the URL of the image resize lambda itself. So this has to be filled with cloudformation
-
+                    HostName: { "Fn::Join" : [ "", [ { "Ref" : "ApiGatewayRestApi" }, ".execute-api.#{AWS::Region}.amazonaws.com" ] ]  }
                     HttpRedirectCode: 307
                     Protocol: https
                     ReplaceKeyPrefixWith: prod?key=
