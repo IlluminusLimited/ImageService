@@ -16,13 +16,19 @@ if (process.env.ALLOWED_DIMENSIONS) {
     dimensions.forEach(dimension => ALLOWED_DIMENSIONS.add(dimension));
 }
 
-exports.handler = function handler(event, context, callback) {
+exports.generateThumbnail = function generateThumbnail(event, context, callback) {
     const key = event.queryStringParameters.key;
-    const match = key.match(/((\d+|auto)x(\d+|auto))\/(.*)/);
+    const match = key.match(/((\d+|auto)x(\d+|auto))(.*)/);
     const dimensions = match[1];
     const width = match[2] === 'auto' ? null : Math.min(parseInt(match[2], 10), MAX_SIZE);
     const height = match[3] === 'auto' ? null : Math.min(parseInt(match[3], 10), MAX_SIZE);
     const originalKey = match[4];
+
+    console.log("Dimensions " + dimensions);
+    console.log("Width " + width);
+    console.log("Height " + height);
+    console.log("OriginalKey " + originalKey);
+
 
     if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
         callback(null, {
@@ -37,13 +43,13 @@ exports.handler = function handler(event, context, callback) {
     // eslint-disable-next-line new-cap
         .then(data => Sharp(data.Body)
             .resize(width, height)
-            .toFormat('png')
+            .toFormat('jpeg')
             .toBuffer()
         )
         .then(buffer => S3.putObject({
                 Body: buffer,
                 Bucket: BUCKET,
-                ContentType: 'image/png',
+                ContentType: 'image/jpeg',
                 Key: key,
                 CacheControl: `max-age=${MAX_AGE}`,
             }).promise()

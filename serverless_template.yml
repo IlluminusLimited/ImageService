@@ -150,10 +150,10 @@ resources:
                 IndexDocument: index.html
                 RoutingRules:
                 - RedirectRule:
-                    HostName: { "Fn::Join" : [ "", [ { "Ref" : "ApiGatewayRestApi" }, ".execute-api.#{AWS::Region}.amazonaws.com" ] ]  }
+                    HostName: ${self:custom.customDomain.domainName}
                     HttpRedirectCode: 307
                     Protocol: https
-                    ReplaceKeyPrefixWith: prod?key=
+                    ReplaceKeyPrefixWith: images/generate?key=
                   RoutingRuleCondition:
                     HttpErrorCodeReturnedEquals: 404
     S3BucketPermissions:
