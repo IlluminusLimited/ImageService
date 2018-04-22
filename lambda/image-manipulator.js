@@ -35,7 +35,7 @@ exports.generateThumbnail = function generateThumbnail(event, context, callback)
     const prefix = match[2];
     const dotExtension = match[7];
     const originalKey = match[1] + dotExtension;
-    const newKey = match[1] + "_" + dimensions + ".jpg";
+    const newKey = match[0];
 
     console.log("Dimensions " + dimensions);
     console.log("Width " + width);
@@ -43,6 +43,7 @@ exports.generateThumbnail = function generateThumbnail(event, context, callback)
     console.log("Prefix " + prefix);
     console.log("DotExtension " + dotExtension);
     console.log("OriginalKey " + originalKey);
+    console.log("NewKey " + newKey);
 
     if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
         callback(null, {
