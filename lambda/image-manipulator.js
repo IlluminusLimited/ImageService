@@ -35,7 +35,7 @@ exports.generateThumbnail = function generateThumbnail(event, context, callback)
     const prefix = match[2];
     const dotExtension = match[7];
     const originalKey = match[1] + dotExtension;
-    const newKey = match[0] + ".jpg";
+    const newKey = match[1] + "_" + dimensions + ".jpg";
 
     console.log("Dimensions " + dimensions);
     console.log("Width " + width);
