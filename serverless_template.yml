@@ -34,6 +34,11 @@ provider:
       Resource:
         - "*"
 
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource:
+        - "arn:aws:lambda:::${self:custom.imageUploaderBucket}/*"
 custom:
   defaultStage: dev
   profiles:
@@ -151,6 +156,19 @@ resources:
                     ReplaceKeyPrefixWith: prod?key=
                   RoutingRuleCondition:
                     HttpErrorCodeReturnedEquals: 404
+    S3BucketPermissions:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:custom.imageUploaderBucket}
+        PolicyDocument:
+          Statement:
+            - Principal: "*"
+              Action:
+                - s3:GetObject
+              Effect: Allow
+              Sid: "AddPerm"
+              Resource: arn:aws:s3:::${self:custom.imageUploaderBucket}/*
+
   Outputs:
     ThumbnailProcessor:
       Description: The ARN of the ThumbnailProcessor state machine
