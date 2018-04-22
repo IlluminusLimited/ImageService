@@ -37,7 +37,6 @@ exports.generateThumbnail = function generateThumbnail(event, context, callback)
     const originalKey = match[1] + dotExtension;
     const newKey = match[1] + ".jpg";
 
-
     console.log("Dimensions " + dimensions);
     console.log("Width " + width);
     console.log("Height " + height);
@@ -58,6 +57,7 @@ exports.generateThumbnail = function generateThumbnail(event, context, callback)
     // eslint-disable-next-line new-cap
         .then(data => Sharp(data.Body)
             .resize(width, height)
+            .max()
             .toFormat('jpeg')
             .toBuffer()
         )
