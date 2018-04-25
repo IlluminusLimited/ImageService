@@ -1,24 +1,25 @@
 'use strict';
 
 const AWSS3 = require('aws-sdk/clients/s3');
-const Sharp = require('sharp');
 const util = require('util');
 const _ = require('lodash');
 const async = require('async');
 const BadRequest = require('./bad-request');
 const InternalServerError = require('./internal-server-error');
 const MovedPermanently = require('./moved-permanently');
+const ImageTransformer = require('./image-transformer');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
 const IMAGE_KEY_PATTERN_REGEX = /(([\/a-zA-Z0-9]+)\/([a-zA-Z0-9]+))_((\d+|auto)x(\d+|auto))(\.jpeg|\.jpg|\.png)/;
 
 module.exports = class ThumbnailGenerator {
-    constructor(s3, bucket, url, allowedDimensions) {
+    constructor(s3, bucket, url, allowedDimensions, imageTransformer) {
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
         this.bucket = _.isUndefined(bucket) ? process.env.BUCKET : bucket;
         this.url = _.isUndefined(url) ? process.env.URL : url;
         this.allowedDimensions = _.isUndefined(allowedDimensions) ? new Set() : allowedDimensions;
+        this.imageTransformer = _.isUndefined(imageTransformer) ? ImageTransformer : imageTransformer;
     }
 
     static parseRequestedImage(requestedImageKey, callback) {
@@ -54,11 +55,9 @@ module.exports = class ThumbnailGenerator {
 
     manipulate(parsedParameters, callback) {
         this.s3.getObject({Bucket: this.bucket, Key: parsedParameters.originalKey}).promise()
-            .then(data => Sharp(data.Body)
-                .resize(parsedParameters.width, parsedParameters.height)
-                .max()
-                .toFormat('jpeg')
-                .toBuffer()
+            .then(data => this.imageTransformer.transformImage(data.Body,
+                parsedParameters.width,
+                parsedParameters.height)
             )
             .then(buffer => this.s3.putObject({
                     Body: buffer,
