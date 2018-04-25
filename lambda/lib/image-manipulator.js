@@ -52,7 +52,7 @@ module.exports = class ThumbnailGenerator {
             dimensions: dimensions,
             width: width,
             height: height,
-            originaKey: originalKey,
+            originalKey: originalKey,
             newKey: newKey
         });
     }
@@ -71,7 +71,7 @@ module.exports = class ThumbnailGenerator {
     }
 
     manipulate(parsedParameters, callback) {
-        S3.getObject({Bucket: BUCKET, Key: parsedParameters.originaKey}).promise()
+        S3.getObject({Bucket: BUCKET, Key: parsedParameters.originalKey}).promise()
         // eslint-disable-next-line new-cap
             .then(data => Sharp(data.Body)
                 .resize(parsedParameters.width, parsedParameters.height)
