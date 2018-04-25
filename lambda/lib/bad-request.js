@@ -1,4 +1,4 @@
-const HttpResponseBuilder = require('lambda/lib/http-response-builder');
+const HttpResponseBuilder = require('./http-response-builder');
 
 module.exports = class BadRequest extends HttpResponseBuilder {
     constructor(body, headers = {}) {

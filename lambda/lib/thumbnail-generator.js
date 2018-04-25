@@ -5,8 +5,8 @@ const Sharp = require('sharp');
 const util = require('util');
 const _ = require('lodash');
 const async = require('async');
-const BadRequest = require('lambda/lib/bad-request');
-const InternalServerError = require('lambda/lib/internal-server-error');
+const BadRequest = require('./bad-request');
+const InternalServerError = require('./internal-server-error');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
