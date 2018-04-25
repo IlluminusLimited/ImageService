@@ -6,21 +6,16 @@ import util from 'util';
 import _ from 'lodash';
 import async from 'async';
 
-const BUCKET = process.env.BUCKET;
-const URL = process.env.URL;
-const ALLOWED_DIMENSIONS = new Set();
-const MAX_AGE = 14400; // seconds = 240 minutes = 4 hours
+const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
 const IMAGE_KEY_PATTERN_REGEX = /(([\/a-zA-Z0-9]+)\/([a-zA-Z0-9]+))_((\d+|auto)x(\d+|auto))(\.jpeg|\.jpg|\.png)/;
 
-if (process.env.ALLOWED_DIMENSIONS) {
-    const dimensions = process.env.ALLOWED_DIMENSIONS.split(/\s*,\s*/);
-    dimensions.forEach(dimension => ALLOWED_DIMENSIONS.add(dimension));
-}
-
 module.exports = class ThumbnailGenerator {
-    constructor(s3) {
+    constructor(s3, bucket, url, allowedDimensions) {
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
+        this.bucket = _.isUndefined(bucket) ? process.env.BUCKET : bucket;
+        this.url = _.isUndefined(url) ? process.env.URL : url;
+        this.allowedDimensions = _.isUndefined(allowedDimensions) ? new Set() : allowedDimensions;
     }
 
     static parseRequestedImage(requestedImageKey, callback) {
@@ -98,12 +93,12 @@ module.exports = class ThumbnailGenerator {
         });
 
         tasks.push((parsedParameters, callback) => {
-            if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(parsedParameters.dimensions)) {
+            if (this.allowedDimensions.size > 0 && !this.allowedDimensions.has(parsedParameters.dimensions)) {
                 callback({
                     statusCode: '400',
                     headers: {},
                     body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
-                    `Valid dimensions are: ${ALLOWED_DIMENSIONS}`
+                    `Valid dimensions are: ${this.allowedDimensions}`
                 });
             }
             else {
