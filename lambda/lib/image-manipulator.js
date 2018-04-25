@@ -1,10 +1,10 @@
 'use strict';
 
-const AWSS3 = require('aws-sdk/clients/s3');
-const Sharp = require('sharp');
-const util = require('util');
-const _ = require('lodash');
-const async = require('async');
+const AWSS3 = import('aws-sdk/clients/s3');
+const Sharp = import('sharp');
+const util = import('util');
+const _ = import('lodash');
+const async = import('async');
 
 const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
@@ -66,7 +66,7 @@ module.exports = class ThumbnailGenerator {
                 `Valid dimensions are: ${ALLOWED_DIMENSIONS}`
             });
         } else {
-            callback(undefined, parsedParameters)
+            callback(undefined, parsedParameters);
         }
     }
 
@@ -107,15 +107,15 @@ module.exports = class ThumbnailGenerator {
         let tasks = [];
 
         tasks.push((callback) => {
-            ImageManipulator.parseRequestedImage(event.queryStringParameters.key, callback);
+            ThumbnailGenerator.parseRequestedImage(event.queryStringParameters.key, callback);
         });
 
         tasks.push((parsedParameters, callback) => {
-            ImageManipulator.validateDimensions(parsedParameters, callback);
+            ThumbnailGenerator.validateDimensions(parsedParameters, callback);
         });
 
         tasks.push((parsedParameters, callback) => {
-            this.manipulate(parsedParameters, callback)
+            this.manipulate(parsedParameters, callback);
         });
 
         async.waterfall(tasks, (err, data) => {
