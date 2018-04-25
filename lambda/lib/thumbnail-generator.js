@@ -7,6 +7,7 @@ const _ = require('lodash');
 const async = require('async');
 const BadRequest = require('./bad-request');
 const InternalServerError = require('./internal-server-error');
+const MovedPermanently = require('./moved-permanently');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
@@ -26,33 +27,33 @@ module.exports = class ThumbnailGenerator {
         if (match === null) {
             callback(new BadRequest(`Key: '${requestedImageKey}' is not a supported image file!`));
         }
+        else {
+            const dimensions = match[4]; //400xauto, for example.
+            const width = match[5] === 'auto' ? null : Math.min(parseInt(match[5], 10), MAX_SIZE);
+            const height = match[6] === 'auto' ? null : Math.min(parseInt(match[6], 10), MAX_SIZE);
+            const dotExtension = match[7];
+            const originalKey = match[1] + dotExtension;
+            const newKey = match[0]; //whatever they requested is what we'll make
 
-        const dimensions = match[4]; //400xauto, for example.
-        const width = match[5] === 'auto' ? null : Math.min(parseInt(match[5], 10), MAX_SIZE);
-        const height = match[6] === 'auto' ? null : Math.min(parseInt(match[6], 10), MAX_SIZE);
-        const dotExtension = match[7];
-        const originalKey = match[1] + dotExtension;
-        const newKey = match[0]; //whatever they requested is what we'll make
+            console.log("Dimensions " + dimensions);
+            console.log("Width " + width);
+            console.log("Height " + height);
+            console.log("DotExtension " + dotExtension);
+            console.log("OriginalKey " + originalKey);
+            console.log("NewKey " + newKey);
 
-        console.log("Dimensions " + dimensions);
-        console.log("Width " + width);
-        console.log("Height " + height);
-        console.log("DotExtension " + dotExtension);
-        console.log("OriginalKey " + originalKey);
-        console.log("NewKey " + newKey);
-
-        callback(undefined, {
-            dimensions: dimensions,
-            width: width,
-            height: height,
-            originalKey: originalKey,
-            newKey: newKey
-        });
+            callback(undefined, {
+                dimensions: dimensions,
+                width: width,
+                height: height,
+                originalKey: originalKey,
+                newKey: newKey
+            });
+        }
     }
 
     manipulate(parsedParameters, callback) {
         this.s3.getObject({Bucket: this.bucket, Key: parsedParameters.originalKey}).promise()
-        // eslint-disable-next-line new-cap
             .then(data => Sharp(data.Body)
                 .resize(parsedParameters.width, parsedParameters.height)
                 .max()
@@ -67,16 +68,12 @@ module.exports = class ThumbnailGenerator {
                     CacheControl: `max-age=${MAX_AGE}`,
                 }).promise()
             )
-            .then(() => callback(undefined, {
-                    statusCode: '301',
-                    headers: {
-                        location: `${this.url}/${parsedParameters.newKey}`,
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        Pragma: 'no-cache',
-                        Expires: '0',
-                    },
-                    body: ''
-                })
+            .then(() => callback(undefined, new MovedPermanently('', {
+                    location: `${this.url}/${parsedParameters.newKey}`,
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    Pragma: 'no-cache',
+                    Expires: '0'
+                }))
             )
             .catch(err => callback(new InternalServerError(err)));
     }
@@ -101,11 +98,11 @@ module.exports = class ThumbnailGenerator {
         });
 
         async.waterfall(tasks, (err, data) => {
-            if(err) {
+            if (err) {
                 err.build(callback)
             }
             else {
-                callback(data);
+                data.build(callback);
             }
         });
     }
