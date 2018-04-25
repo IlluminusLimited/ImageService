@@ -66,7 +66,7 @@ module.exports = class ThumbnailGenerator {
                 `Valid dimensions are: ${ALLOWED_DIMENSIONS}`
             });
         } else {
-            callback(null, parsedParameters)
+            callback(undefined, parsedParameters)
         }
     }
 
@@ -87,7 +87,7 @@ module.exports = class ThumbnailGenerator {
                     CacheControl: `max-age=${MAX_AGE}`,
                 }).promise()
             )
-            .then(() => callback(null, {
+            .then(() => callback(undefined, {
                     statusCode: '301',
                     headers: {
                         location: `${URL}/${parsedParameters.newKey}`,
