@@ -53,7 +53,7 @@ module.exports = class ThumbnailGenerator {
     }
 
     manipulate(parsedParameters, callback) {
-        this.s3.getObject({Bucket: BUCKET, Key: parsedParameters.originalKey}).promise()
+        this.s3.getObject({Bucket: this.bucket, Key: parsedParameters.originalKey}).promise()
         // eslint-disable-next-line new-cap
             .then(data => Sharp(data.Body)
                 .resize(parsedParameters.width, parsedParameters.height)
@@ -63,7 +63,7 @@ module.exports = class ThumbnailGenerator {
             )
             .then(buffer => this.s3.putObject({
                     Body: buffer,
-                    Bucket: BUCKET,
+                    Bucket: this.bucket,
                     ContentType: 'image/jpeg',
                     Key: parsedParameters.newKey,
                     CacheControl: `max-age=${MAX_AGE}`,
@@ -72,7 +72,7 @@ module.exports = class ThumbnailGenerator {
             .then(() => callback(undefined, {
                     statusCode: '301',
                     headers: {
-                        location: `${URL}/${parsedParameters.newKey}`,
+                        location: `${this.url}/${parsedParameters.newKey}`,
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         Pragma: 'no-cache',
                         Expires: '0',
