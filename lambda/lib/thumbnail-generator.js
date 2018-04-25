@@ -1,17 +1,17 @@
 'use strict';
 
-import AWSS3 from 'aws-sdk/clients/s3';
-import Sharp from 'sharp';
-import util from 'util';
-import _ from 'lodash';
-import async from 'async';
-import HttpResponse from 'http-response'
+const AWSS3 = require('aws-sdk/clients/s3');
+const Sharp = require('sharp');
+const util = require('util');
+const _ = require('lodash');
+const async = require('async');
+const HttpResponse = require('http-response');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
 const IMAGE_KEY_PATTERN_REGEX = /(([\/a-zA-Z0-9]+)\/([a-zA-Z0-9]+))_((\d+|auto)x(\d+|auto))(\.jpeg|\.jpg|\.png)/;
 
-export class ThumbnailGenerator {
+module.exports = class ThumbnailGenerator {
     constructor(s3, bucket, url, allowedDimensions) {
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
         this.bucket = _.isUndefined(bucket) ? process.env.BUCKET : bucket;
@@ -80,7 +80,7 @@ export class ThumbnailGenerator {
             .catch(err => callback(err));
     }
 
-    generateThumbnail(event, callback) {
+    generate(event, callback) {
         console.log(util.inspect(event, {depth: 5}));
 
         let tasks = [];
@@ -101,4 +101,4 @@ export class ThumbnailGenerator {
 
         async.waterfall(tasks, callback);
     }
-}
+};

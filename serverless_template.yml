@@ -83,7 +83,7 @@ functions:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
   generateThumbnail:
-    handler: lambda/image-manipulator.generateThumbnail
+    handler: lambda/lambda.generateThumbnail
     events:
       - http:
           method: get
