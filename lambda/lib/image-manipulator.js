@@ -105,7 +105,8 @@ module.exports = class ThumbnailGenerator {
                     body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
                     `Valid dimensions are: ${ALLOWED_DIMENSIONS}`
                 });
-            } else {
+            }
+            else {
                 this.manipulate(parsedParameters, callback);
             }
         });
