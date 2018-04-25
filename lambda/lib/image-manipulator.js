@@ -57,21 +57,8 @@ module.exports = class ThumbnailGenerator {
         });
     }
 
-    static validateDimensions(parsedParameters, callback) {
-        if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(parsedParameters.dimensions)) {
-            callback({
-                statusCode: '400',
-                headers: {},
-                body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
-                `Valid dimensions are: ${ALLOWED_DIMENSIONS}`
-            });
-        } else {
-            callback(undefined, parsedParameters);
-        }
-    }
-
     manipulate(parsedParameters, callback) {
-        S3.getObject({Bucket: BUCKET, Key: parsedParameters.originalKey}).promise()
+        this.s3.getObject({Bucket: BUCKET, Key: parsedParameters.originalKey}).promise()
         // eslint-disable-next-line new-cap
             .then(data => Sharp(data.Body)
                 .resize(parsedParameters.width, parsedParameters.height)
@@ -111,11 +98,16 @@ module.exports = class ThumbnailGenerator {
         });
 
         tasks.push((parsedParameters, callback) => {
-            ThumbnailGenerator.validateDimensions(parsedParameters, callback);
-        });
-
-        tasks.push((parsedParameters, callback) => {
-            this.manipulate(parsedParameters, callback);
+            if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(parsedParameters.dimensions)) {
+                callback({
+                    statusCode: '400',
+                    headers: {},
+                    body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
+                    `Valid dimensions are: ${ALLOWED_DIMENSIONS}`
+                });
+            } else {
+                this.manipulate(parsedParameters, callback);
+            }
         });
 
         async.waterfall(tasks, (err, data) => {
