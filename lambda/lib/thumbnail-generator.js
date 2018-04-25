@@ -5,6 +5,7 @@ import Sharp from 'sharp';
 import util from 'util';
 import _ from 'lodash';
 import async from 'async';
+import HttpResponse from 'http-response'
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
@@ -22,11 +23,7 @@ module.exports = class ThumbnailGenerator {
         const match = requestedImageKey.match(IMAGE_KEY_PATTERN_REGEX);
 
         if (match === null) {
-            callback(undefined, {
-                statusCode: '400',
-                headers: {},
-                body: `Key: '${requestedImageKey}' is not a supported image file!`
-            });
+            callback(new HttpResponse(400,`Key: '${requestedImageKey}' is not a supported image file!` ));
         }
 
         const dimensions = match[4]; //400xauto, for example.
@@ -94,12 +91,8 @@ module.exports = class ThumbnailGenerator {
 
         tasks.push((parsedParameters, callback) => {
             if (this.allowedDimensions.size > 0 && !this.allowedDimensions.has(parsedParameters.dimensions)) {
-                callback(undefined, {
-                    statusCode: '400',
-                    headers: {},
-                    body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
-                    `Valid dimensions are: ${this.allowedDimensions}`
-                });
+                callback(new HttpResponse(400,`Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
+                    `Valid dimensions are: ${this.allowedDimensions}`));
             }
             else {
                 this.manipulate(parsedParameters, callback);
