@@ -111,15 +111,7 @@ module.exports = class ThumbnailGenerator {
                 callback(err);
             }
             else {
-                let response = {
-                    statusCode: 200,
-                    body: JSON.stringify({
-                        bucket: data[0].Bucket,
-                        key: data[0].Key,
-                        message: data[1]
-                    })
-                };
-                callback(undefined, response);
+                callback(undefined, data);
             }
         });
     }
