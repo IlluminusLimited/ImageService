@@ -48,7 +48,13 @@ module.exports = class ThumbnailGenerator {
         console.log("OriginalKey " + originalKey);
         console.log("NewKey " + newKey);
 
-        return {dimensions: dimensions, width: width, height: height, originaKey: originalKey, newKey: newKey}
+        callback(undefined, {
+            dimensions: dimensions,
+            width: width,
+            height: height,
+            originaKey: originalKey,
+            newKey: newKey
+        });
     }
 
     static validateDimensions(parsedParameters, callback) {
