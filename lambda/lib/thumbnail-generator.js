@@ -22,7 +22,7 @@ module.exports = class ThumbnailGenerator {
         const match = requestedImageKey.match(IMAGE_KEY_PATTERN_REGEX);
 
         if (match === null) {
-            callback({
+            callback(undefined, {
                 statusCode: '400',
                 headers: {},
                 body: `Key: '${requestedImageKey}' is not a supported image file!`
@@ -94,7 +94,7 @@ module.exports = class ThumbnailGenerator {
 
         tasks.push((parsedParameters, callback) => {
             if (this.allowedDimensions.size > 0 && !this.allowedDimensions.has(parsedParameters.dimensions)) {
-                callback({
+                callback(undefined, {
                     statusCode: '400',
                     headers: {},
                     body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
@@ -106,13 +106,6 @@ module.exports = class ThumbnailGenerator {
             }
         });
 
-        async.waterfall(tasks, (err, data) => {
-            if (err) {
-                callback(err);
-            }
-            else {
-                callback(undefined, data);
-            }
-        });
+        async.waterfall(tasks, callback);
     }
 };
