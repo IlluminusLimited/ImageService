@@ -5,7 +5,7 @@ const Sharp = require('sharp');
 const util = require('util');
 const _ = require('lodash');
 const async = require('async');
-const HttpResponse = require('http-response');
+const BadRequest = require('lambda/lib/bad-request');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
@@ -23,7 +23,7 @@ module.exports = class ThumbnailGenerator {
         const match = requestedImageKey.match(IMAGE_KEY_PATTERN_REGEX);
 
         if (match === null) {
-            callback(new HttpResponse(400, `Key: '${requestedImageKey}' is not a supported image file!`));
+            callback(new BadRequest(`Key: '${requestedImageKey}' is not a supported image file!`));
         }
 
         const dimensions = match[4]; //400xauto, for example.
@@ -91,7 +91,7 @@ module.exports = class ThumbnailGenerator {
 
         tasks.push((parsedParameters, callback) => {
             if (this.allowedDimensions.size > 0 && !this.allowedDimensions.has(parsedParameters.dimensions)) {
-                callback(new HttpResponse(400, `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
+                callback(new BadRequest(`Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
                     `Valid dimensions are: ${this.allowedDimensions}`));
             }
             else {
@@ -99,6 +99,13 @@ module.exports = class ThumbnailGenerator {
             }
         });
 
-        async.waterfall(tasks, callback);
+        async.waterfall(tasks, (err, data) => {
+            if(err) {
+                err.build(callback)
+            }
+            else {
+                callback(data);
+            }
+        });
     }
 };
