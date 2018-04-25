@@ -27,7 +27,7 @@ module.exports = class ThumbnailGenerator {
         const match = requestedImageKey.match(IMAGE_KEY_PATTERN_REGEX);
 
         if (match === null) {
-            callback(null, {
+            callback({
                 statusCode: '400',
                 headers: {},
                 body: `Key: '${requestedImageKey}' is not a supported image file!`
@@ -59,7 +59,7 @@ module.exports = class ThumbnailGenerator {
 
     static validateDimensions(parsedParameters, callback) {
         if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(parsedParameters.dimensions)) {
-            callback(null, {
+            callback({
                 statusCode: '400',
                 headers: {},
                 body: `Invalid dimensions specified: ${parsedParameters.dimensions}. ` +
