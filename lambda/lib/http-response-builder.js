@@ -7,10 +7,9 @@ module.exports = class HttpResponseBuilder {
 
     generateResponse() {
         return {
-            statusCode: statusCode,
-            headers: headers,
-            body: body
+            statusCode: this.statusCode,
+            headers: this.headers,
+            body: this.body
         }
     }
-
 };

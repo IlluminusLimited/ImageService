@@ -2,10 +2,10 @@ const HttpResponseBuilder = require('lambda/lib/http-response-builder');
 
 module.exports = class BadRequest extends HttpResponseBuilder {
     constructor(body, headers = {}) {
-        super(400, body, headers)
+        super(400, body, headers);
     }
 
     build(callback) {
-        callback(undefined, super.generateResponse())
+        callback(undefined, super.generateResponse());
     }
 };

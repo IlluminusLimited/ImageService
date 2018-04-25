@@ -6,6 +6,7 @@ const util = require('util');
 const _ = require('lodash');
 const async = require('async');
 const BadRequest = require('lambda/lib/bad-request');
+const InternalServerError = require('lambda/lib/internal-server-error');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
@@ -77,7 +78,7 @@ module.exports = class ThumbnailGenerator {
                     body: ''
                 })
             )
-            .catch(err => callback(err));
+            .catch(err => callback(new InternalServerError(err)));
     }
 
     generate(event, callback) {
