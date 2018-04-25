@@ -1,10 +1,10 @@
 'use strict';
 
-const AWSS3 = import('aws-sdk/clients/s3');
-const Sharp = import('sharp');
-const util = import('util');
-const _ = import('lodash');
-const async = import('async');
+import AWSS3 from 'aws-sdk/clients/s3';
+import Sharp from 'sharp';
+import util from 'util';
+import _ from 'lodash';
+import async from 'async';
 
 const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
