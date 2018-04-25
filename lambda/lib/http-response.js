@@ -1,7 +1,7 @@
-module.exports = class HttpResponse {
+export class HttpResponse {
     constructor(statusCode, body, headers = {}) {
         this.statusCode = statusCode;
         this.body = body;
         this.headers = headers;
     }
-};
+}
