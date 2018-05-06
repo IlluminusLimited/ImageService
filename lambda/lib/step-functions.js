@@ -4,7 +4,7 @@ const stepfunctions = require('aws-sdk/clients/stepfunctions');
 const _ = require('lodash');
 const util = require('util');
 const InternalServerError = require('./internal-server-error');
-const Ok = require('../lib/ok');
+const Ok = require('./ok');
 
 module.exports = class StepFunctions {
     constructor(stepFunc) {
