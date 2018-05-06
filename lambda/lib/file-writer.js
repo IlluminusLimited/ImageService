@@ -2,6 +2,8 @@
 
 const AWSS3 = require('aws-sdk/clients/s3');
 const _ = require('lodash');
+const InternalServerError = require('./internal-server-error');
+const Ok = require('./ok');
 
 module.exports = class FileWriter {
     constructor(s3) {
@@ -9,13 +11,12 @@ module.exports = class FileWriter {
     }
 
     saveObject(imageFile, callback) {
-        this.s3.putObject(imageFile, (err, data) => {
+        this.s3.putObject(imageFile, (err) => {
             if (err) {
-                console.log(err, err.stack);
-                callback(err);
+                callback(new InternalServerError(err));
             }
             else {
-                callback(undefined, data);
+                callback(undefined, new Ok(imageFile));
             }
         });
     }

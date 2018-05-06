@@ -10,6 +10,6 @@ module.exports = class HttpResponseBuilder {
             statusCode: this.statusCode,
             headers: this.headers,
             body: this.body
-        }
+        };
     }
 };
