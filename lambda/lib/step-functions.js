@@ -24,7 +24,7 @@ module.exports = class StepFunctions {
 
         this.callStepFunction(resizeParams).then(result => {
             if (!result) {
-                callback("Failed to execute step function");
+                callback('Failed to execute step function');
             }
 
             const response = {
@@ -47,7 +47,7 @@ module.exports = class StepFunctions {
         };
 
         console.log('Start execution');
-        return stepfunctions.startExecution(params).promise().then(() => {
+        return this.startExecution(params).promise().then(() => {
             return true;
         }).catch(error => {
             console.log(error);
