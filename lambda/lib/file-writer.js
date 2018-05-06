@@ -11,12 +11,12 @@ module.exports = class FileWriter {
     }
 
     saveObject(imageFile, callback) {
-        this.s3.putObject(imageFile, (err) => {
+        this.s3.putObject(imageFile, (err, data) => {
             if (err) {
                 callback(new InternalServerError(err));
             }
             else {
-                callback(undefined, new Ok({Key: imageFile.Key}));
+                callback(undefined, new Ok({bucket: imageFile.Bucket, key: imageFile.Key, message: data}));
             }
         });
     }

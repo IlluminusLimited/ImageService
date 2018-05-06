@@ -9,7 +9,7 @@ module.exports = class HttpResponseBuilder {
         return {
             statusCode: this.statusCode,
             headers: this.headers,
-            body: this.body
+            body: JSON.stringify(this.body)
         };
     }
 };
