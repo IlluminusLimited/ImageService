@@ -77,8 +77,12 @@ module.exports = class ImageUploader {
         });
 
         async.waterfall(tasks, (err, data) => {
-            console.log(util.inspect(err, {depth: 5}));
-            console.log(util.inspect(data, {depth: 5}));
+            console.log('Finished. Resolving response body');
+            if(err) {
+                console.log(util.inspect(err, {depth: 5}));
+            } else {
+                console.log(util.inspect(data, {depth: 5}));
+            }
 
             err === null ? err.build(callback) : data.build(callback);
         });

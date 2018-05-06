@@ -16,7 +16,7 @@ module.exports = class FileWriter {
                 callback(new InternalServerError(err));
             }
             else {
-                callback(undefined, new Ok(imageFile));
+                callback(undefined, new Ok({Key: imageFile.Key}));
             }
         });
     }
