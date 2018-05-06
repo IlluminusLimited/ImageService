@@ -1,26 +1,23 @@
 'use strict';
 
+const LambdaTester = require('lambda-tester');
 
-let expect = require('chai').expect;
-
-let LambdaTester = require('lambda-tester');
-
-let newImageUploaderLambda = require('../lib/image-uploader');
+const imageUploaderLambda = require('../lib/image-uploader');
 
 describe('newImageUploader lambda', function () {
     it.skip('Lambda actually works', function () {
-        return LambdaTester(newImageUploaderLambda)
+        return LambdaTester(imageUploaderLambda)
             .event({
                 body: JSON.stringify({
                     data: {
                         metadata: {
                             user_id: 'asdf',
-                            year: "2018"
+                            year: '2018'
                         },
                         image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIfAhkiAAAAFlJREFUCJl9yjEKwCAUBNERv43g/U+WKqVVsNRKxU0jJGnyYGGLcTln1VoBSCnRWsN7D0AIATOjlEKMEbQd16kxhuac6r1rrfWZJBmbAEn8eeKlT/z+zjkAbkDFRMbggmGwAAAAAElFTkSuQmCC'
                     }
                 })
             })
-            .expectResult()
+            .expectResult();
     });
 });

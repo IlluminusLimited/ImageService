@@ -59,7 +59,7 @@ custom:
 
 
 functions:
-  newImageUploader:
+  imageUploader:
     handler: lambda/lambda.upload
     events:
       - http:
