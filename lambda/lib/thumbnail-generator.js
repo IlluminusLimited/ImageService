@@ -80,6 +80,7 @@ module.exports = class ThumbnailGenerator {
     download(parsedParameters, callback) {
         this.s3.getObject({Bucket: this.bucket, Key: parsedParameters.originalKey}, (err, data) => {
             if (err) {
+                console.log(`we had an error ${err}`);
                 callback(new InternalServerError(err));
             }
             else {
