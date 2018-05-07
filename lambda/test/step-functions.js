@@ -1,26 +1,24 @@
 'use strict';
 
 const expect = require('chai').expect;
-const sinon = require('sinon');
 const util = require('util');
-const Ok = require('../lib/ok');
 const StepFunctions = require('../lib/step-functions');
 
 const MockEvent = {
     Records: [
         {
-            'eventVersion': '2.0',
-            'eventSource': 'aws:s3',
-            'awsRegion': 'us-east-1',
-            'eventTime': '1970-01-01T00:00:00.000Z',
-            'eventName': 'ObjectCreated:Put',
-            'userIdentity': {
-                'principalId': 'AIDAJDPLRKLG7UEXAMPLE'
+            eventVersion: '2.0',
+            eventSource: 'aws:s3',
+            awsRegion: 'us-east-1',
+            eventTime: '1970-01-01T00:00:00.000Z',
+            eventName: 'ObjectCreated:Put',
+            userIdentity: {
+                principalId: 'AIDAJDPLRKLG7UEXAMPLE'
             },
-            'requestParameters': {
-                'sourceIPAddress': '127.0.0.1'
+            requestParameters: {
+                sourceIPAddress: '127.0.0.1'
             },
-            'responseElements': {
+            responseElements: {
                 'x-amz-request-id': 'C3D13FE58DE4C810',
                 'x-amz-id-2': 'FMyUVURIY8/IgAtTv8xRjskZQpcIZ9KG4V5Wp6S7S/JRWeUWerMUE5JgHvANOjpD'
             },
