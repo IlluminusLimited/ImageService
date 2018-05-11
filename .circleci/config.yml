@@ -12,9 +12,10 @@ jobs:
   build:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name:  Build
-          command: cd lambda && npm install --production
+          command:  cd lambda && npm install --production
       - persist_to_workspace:
           root: /build
           paths:
@@ -38,7 +39,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /build
+          at: /build/lambda
       - run:
           name: Deploy
           command: |
@@ -50,7 +51,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /build
+          at: /build/lambda
       - run:
           name: Deploy
           command: |
