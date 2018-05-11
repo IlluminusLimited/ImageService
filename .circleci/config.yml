@@ -1,0 +1,79 @@
+# Ruby CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+#
+version: 2
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: pinster/node:6
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - run:
+          name:  Build
+          command: cd lambda && npm install --production
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - lambda
+
+
+  test:
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: cd lambda && npm install
+      - run:
+          name: Run tests
+          command: npm test
+
+  deploy-dev:
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo/
+      - run:
+          name: Deploy
+          command: |
+            ruby serverless.rb create_domain dev false && \
+            ruby serverless.rb deploy dev false
+
+  deploy-prod:
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo/
+      - run:
+          name: Deploy
+          command: |
+            ruby serverless.rb create_domain prod false && \
+            ruby serverless.rb deploy prod false
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy-dev:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - develop
+
+      - deploy-prod:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+
