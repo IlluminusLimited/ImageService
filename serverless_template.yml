@@ -3,15 +3,25 @@ service: image-service
 provider:
   name: aws
   runtime: nodejs6.10
+  region: us-east-1
   stage: ${opt:stage, self:custom.defaultStage}
-  profile: ${self:custom.profiles.${self:provider.stage}, default}
+  profile: ${self:custom.profiles.${self:provider.stage}, 'default'}
+  endpointType: REGIONAL
+  deploymentBucket:
+      name: "pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}}"
+  package:
+    exclude:
+      - .git/**
+      - .circleci/
+      - lambda/test
+      - node_modules
+      - "*.md"
 
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "s3:*"
       Resource:
-        - { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ]]}
         - "arn:aws:s3:::${self:custom.imageUploaderBucket}/*"
 
     - Effect: "Allow"
@@ -26,11 +36,22 @@ provider:
       Resource:
         - "*"
 
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource:
+        - "arn:aws:lambda:::${self:custom.imageUploaderBucket}/*"
 custom:
   defaultStage: dev
   profiles:
     dev: dev
     prod: prod
+  customDomain:
+    domainName: image-service.api-${self:provider.stage}.pinster.info
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+  imageBucketUrl: http://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
 
   # if the bucket name is changed then you must go to the resources section and change it there too!
   # This is a stupid limitation of serverless
@@ -38,9 +59,10 @@ custom:
   # https://github.com/serverless/serverless/issues/2749
   imageUploaderBucket: pinster-image-service
 
+
 functions:
-  newImageUploader:
-    handler: image-uploader.upload
+  imageUploader:
+    handler: lambda/lambda.upload
     events:
       - http:
           method: post
@@ -51,7 +73,7 @@ functions:
           BUCKET_NAME: ${self:custom.imageUploaderBucket}
 
   startExecution:
-    handler: step-functions.startExecution
+    handler: lambda/lambda.startExecution
     events:
       - s3:
           bucket: ${self:custom.imageUploaderBucket}
@@ -63,15 +85,28 @@ functions:
       STATEMACHINE_ARN: ${self:resources.Outputs.ThumbnailProcessor.Value}
 
   generateThumbnail:
-    handler: image-manipulator.generateThumbnail
+    handler: lambda/lambda.generateThumbnail
+    events:
+      - http:
+          method: get
+          path: images/generate
+          cors: true
     memorySize: 1024
+    environment:
+          BUCKET: ${self:custom.imageUploaderBucket}
+          URL: ${self:custom.imageBucketUrl}
 
   moderate:
-    handler: moderator.moderate
+    handler: lambda/lambda.moderate
     memorySize: 128
 
-  notify:
-    handler: integrator.notify
+
+  notifySuccess:
+    handler: lambda/integrator.notifySuccess
+    memorySize: 128
+
+  notifyFailure:
+    handler: lambda/integrator.notifyFailure
     memorySize: 128
 
 stepFunctions:
@@ -85,18 +120,18 @@ stepFunctions:
           Moderate:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-moderate"
-            Next: GenerateThumbnail
+            Next: NotifyIntegrationsSuccess
             Catch:
             - ErrorEquals:
               - ModerationThresholdExceeded
-              Next: NotifyIntegrations
-          GenerateThumbnail:
+              Next: NotifyIntegrationsFailure
+          NotifyIntegrationsSuccess:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-generateThumbnail"
-            Next: NotifyIntegrations
-          NotifyIntegrations:
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-success"
+            End: true
+          NotifyIntegrationsFailure:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify"
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-failure"
             End: true
 
 resources:
@@ -113,6 +148,28 @@ resources:
               AllowedMethods: [GET, PUT, POST, HEAD]
               AllowedOrigins: ['*']
               MaxAge: '3600'
+        WebsiteConfiguration:
+                IndexDocument: index.html
+                RoutingRules:
+                - RedirectRule:
+                    HostName: ${self:custom.customDomain.domainName}
+                    HttpRedirectCode: 307
+                    Protocol: https
+                    ReplaceKeyPrefixWith: images/generate?key=
+                  RoutingRuleCondition:
+                    HttpErrorCodeReturnedEquals: 404
+    S3BucketPermissions:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:custom.imageUploaderBucket}
+        PolicyDocument:
+          Statement:
+            - Principal: "*"
+              Action:
+                - s3:GetObject
+              Effect: Allow
+              Sid: "AddPerm"
+              Resource: arn:aws:s3:::${self:custom.imageUploaderBucket}/*
 
   Outputs:
     ThumbnailProcessor:
@@ -123,3 +180,4 @@ resources:
 plugins:
   - serverless-step-functions
   - serverless-pseudo-parameters
+  - serverless-domain-manager
