@@ -42,7 +42,7 @@ jobs:
           at: /build/lambda
       - run:
           name: Install serverless
-          command: npm install
+          command: npm install -g
       - run:
           name: Deploy
           command: |
@@ -57,7 +57,7 @@ jobs:
           at: /build/lambda
       - run:
           name: Install serverless
-          command: npm install
+          command: npm install -g
       - run:
           name: Deploy
           command: |
