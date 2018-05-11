@@ -16,12 +16,14 @@ jobs:
           name:  Build
           command: cd lambda && npm install --production
       - persist_to_workspace:
-          root: ~/repo
+          root: /build
           paths:
             - lambda
 
   test:
-    <<: *defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:6
     steps:
       - checkout
       - run:
@@ -36,7 +38,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/repo/
+          at: /build/
       - run:
           name: Deploy
           command: |
@@ -48,7 +50,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/repo/
+          at: /build/
       - run:
           name: Deploy
           command: |
