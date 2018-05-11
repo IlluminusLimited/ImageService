@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/PinsterTeam/ImageService.svg?branch=develop)](https://travis-ci.org/PinsterTeam/ImageService)
+[![CircleCI](https://circleci.com/gh/PinsterTeam/ImageService.svg?style=shield)](https://circleci.com/gh/PinsterTeam/ImageService)
 
 # Pinster - ImageService
 
