@@ -7,7 +7,7 @@ const ThumbnailGenerator = require('../lib/thumbnail-generator');
 
 const MockEvent = {
     queryStringParameters: {
-        key: 'bob/key_400x200.jpg'
+        key: 'bob/key_400x200'
     }
 };
 const MockS3 = class MockS3 {
@@ -33,7 +33,7 @@ const ExpectedResponse = {
     statusCode: 301,
     headers:
         {
-            location: 'http://image-service.api.pinster.io/bob/key_400x200.jpg',
+            location: 'http://image-service.api.pinster.io/bob/key_400x200',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             Pragma: 'no-cache',
             Expires: '0'
