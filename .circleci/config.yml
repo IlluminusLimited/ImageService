@@ -32,7 +32,7 @@ jobs:
           command: cd lambda && npm install
       - run:
           name: Run tests
-          command: npm test
+          command: cd lambda && npm test
 
   deploy-dev:
     <<: *defaults
@@ -40,6 +40,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: /build/lambda
+      - run:
+          name: Install serverless
+          command: npm install
       - run:
           name: Deploy
           command: |
@@ -52,6 +55,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: /build/lambda
+      - run:
+          name: Install serverless
+          command: npm install
       - run:
           name: Deploy
           command: |
