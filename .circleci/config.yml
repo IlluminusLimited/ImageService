@@ -20,8 +20,8 @@ jobs:
           paths:
             - lambda
 
-
   test:
+    <<: *defaults
     steps:
       - checkout
       - run:
@@ -32,6 +32,7 @@ jobs:
           command: npm test
 
   deploy-dev:
+    <<: *defaults
     steps:
       - checkout
       - attach_workspace:
@@ -43,6 +44,7 @@ jobs:
             ruby serverless.rb deploy dev false
 
   deploy-prod:
+    <<: *defaults
     steps:
       - checkout
       - attach_workspace:
