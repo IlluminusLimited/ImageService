@@ -4,7 +4,7 @@
 #
 version: 2
 defaults: &defaults
-  working_directory: ~/repo
+  working_directory: /build
   docker:
     - image: pinster/node:6
 
@@ -21,9 +21,9 @@ jobs:
             - lambda
 
   test:
-  working_directory: ~/repo
-  docker:
-    - image: circleci/node:6
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:6
     steps:
       - checkout
       - run:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /build/
+          at: /build
       - run:
           name: Deploy
           command: |
@@ -50,7 +50,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /build/
+          at: /build
       - run:
           name: Deploy
           command: |
