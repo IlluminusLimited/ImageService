@@ -4,9 +4,9 @@ ADD etc/nodesource.gpg.key /etc
 
 WORKDIR /tmp
 
-RUN yum -y install gcc-c++ python && \
+RUN yum -y install gcc-c++ && \
     rpm --import /etc/nodesource.gpg.key && \
-    curl --location --output ns.rpm https://rpm.nodesource.com/pub_8.x/el/7/x86_64/nodejs-8.11.1-1nodesource.x86_64.rpm  && \
+    curl --location --output ns.rpm https://rpm.nodesource.com/pub_6.x/el/7/x86_64/nodejs-6.10.1-1nodesource.el7.centos.x86_64.rpm && \
     rpm --checksig ns.rpm && \
     rpm --install --force ns.rpm && \
     npm cache clean --force && \
