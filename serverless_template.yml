@@ -112,7 +112,7 @@ functions:
 stepFunctions:
   stateMachines:
     thumbnailProcessor:
-      name: thumbnailProcessor
+      name: thumbnailProcessor-${self:provider.stage}
       definition:
         Comment: "StateMachine that turns raw images into thumbnails"
         StartAt: Moderate
