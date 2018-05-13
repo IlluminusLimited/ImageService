@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const ImageUploader = require('../lib/image-uploader');
-const sinon = require('sinon');
 const util = require('util');
 const Ok = require('../lib/ok');
 
@@ -10,7 +9,9 @@ const goodPayload = {
     data: {
         metadata: {
             user_id: 'uuid',
-            year: 'integer year'
+            year: 'integer year',
+            imageable_type: 'imageable_type',
+            imageable_id: 'imageable_id'
         },
         image: 'base64 encoded image'
     }
@@ -38,6 +39,21 @@ const MockFileWriter = class MockFileWriter {
     }
 };
 
+const BadResponsePayload = {
+    error: 'Bad Request. Required fields are missing.',
+    example_body: {
+        data: {
+            metadata: {
+                user_id: 'uuid',
+                year: 'integer year',
+                imageable_type: 'imageable_type',
+                imageable_id: 'imageable_id'
+            },
+            image: 'base64 encoded image'
+        }
+    }
+};
+
 describe('ImageUploader', function () {
     it('Correctly parses the event', function () {
         let eventFixture = class {
@@ -54,13 +70,15 @@ describe('ImageUploader', function () {
     it('Blows up on missing year', function () {
         let eventFixture = class {
             constructor() {
-                this.body = JSON.stringify(badYearPayload);
+                this.body = JSON.stringify({data: badYearPayload});
             }
         };
-        let callback = sinon.spy();
 
-        new ImageUploader().parseRequest(new eventFixture(), callback);
-        expect(callback.called).to.be.true;
+        let callback = (err) => {
+            expect(err).to.deep.equal({statusCode: 400, headers: {}, body: BadResponsePayload});
+        };
+
+        new ImageUploader('bucket').parseRequest(new eventFixture(), callback);
     });
 
     it('Actually uploads the file', function () {

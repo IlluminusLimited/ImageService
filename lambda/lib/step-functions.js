@@ -12,20 +12,12 @@ module.exports = class StepFunctions {
     }
 
     startExecution(event, callback) {
-        console.log(util.inspect(event, {depth: 5}));
-
         let s3Event = event.Records[0].s3.object;
         let s3BucketName = event.Records[0].s3.bucket.name;
 
-        console.log(s3Event);
-        // let desiredSizes = new Set();
-        let height = 100;
-        let width = 100;
-
-        let resizeParams = {Bucket: s3BucketName, Key: s3Event.key, height: height, width: width};
-
-        this.callStepFunction(resizeParams, (err) => {
+        this.callStepFunction( {Bucket: s3BucketName, Key: s3Event.key}, (err) => {
             if (err) {
+                console.log(util.inspect(err, {depth: 5}));
                 new InternalServerError(err).build(callback);
             }
             else {
@@ -34,10 +26,10 @@ module.exports = class StepFunctions {
         });
     }
 
-    callStepFunction(resizeParams, callback) {
+    callStepFunction(stepFunctionParams, callback) {
         let params = {
             stateMachineArn: process.env.STATEMACHINE_ARN,
-            input: JSON.stringify(resizeParams)
+            input: JSON.stringify(stepFunctionParams)
         };
 
         this.stepFunctions.startExecution(params, callback);
