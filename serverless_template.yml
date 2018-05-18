@@ -119,13 +119,13 @@ functions:
     memorySize: 128
 
   notifySuccess:
-    handler: lambda/notifier.notifySuccess
+    handler: lambda/lambda.notifySuccess
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
 
   notifyFailure:
-    handler: lambda/notifier.notifyFailure
+    handler: lambda/lambda.notifyFailure
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
