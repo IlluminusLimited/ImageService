@@ -33,3 +33,8 @@ module.exports.notifyFailure = (event, context, callback) => {
     let notifier = new Notifier();
     notifier.notifyFailure(event, callback);
 };
+
+// module.exports.renameImage= (event, context, callback) => {
+//     let notifier = new Notifier();
+//     notifier.notifySuccess(event, callback);
+// };

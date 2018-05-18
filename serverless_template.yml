@@ -48,6 +48,7 @@ provider:
       Resource:
         - "arn:aws:lambda:::${self:custom.imageUploaderBucket}/*"
 custom:
+  logRetentionInDays: 14
   defaultStage: dev
   profiles:
     dev: dev
@@ -200,3 +201,4 @@ plugins:
   - serverless-step-functions
   - serverless-pseudo-parameters
   - serverless-domain-manager
+  - serverless-plugin-log-retention
