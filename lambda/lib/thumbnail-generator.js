@@ -11,7 +11,7 @@ const ImageTransformer = require('./image-transformer');
 
 const MAX_AGE = 86400; // 24 hours
 const MAX_SIZE = 5000; // 5 thousand pixels (wide or high)
-const IMAGE_KEY_PATTERN_REGEX = /(([/a-zA-Z0-9]+)\/([a-zA-Z0-9]+))_((\d+|auto)x(\d+|auto))/;
+const IMAGE_KEY_PATTERN_REGEX = /(([/a-zA-Z0-9]+)([a-zA-Z0-9]+))_((\d+|auto)x(\d+|auto))/;
 
 module.exports = class ThumbnailGenerator {
     constructor(bucket, url, s3, imageTransformer, allowedDimensions) {

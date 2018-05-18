@@ -23,6 +23,7 @@ provider:
         - "sns:Publish"
       Resource:
         - "${self:custom.failure_notification_sns_arn}"
+
     - Effect: "Allow"
       Action:
         - "s3:*"
