@@ -141,18 +141,18 @@ stepFunctions:
           Moderate:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-moderate"
-            Next: NotifyIntegrationsSuccess
+            Next: NotifySuccess
             Catch:
             - ErrorEquals:
               - ModerationThresholdExceeded
-              Next: NotifyIntegrationsFailure
-          NotifyIntegrationsSuccess:
+              Next: NotifyFailure
+          NotifySuccess:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-success"
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notifySuccess"
             End: true
-          NotifyIntegrationsFailure:
+          NotifyFailure:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-failure"
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notifyFailure"
             End: true
 
 resources:

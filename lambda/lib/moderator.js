@@ -13,7 +13,7 @@ module.exports = class Moderator {
     moderate(event, callback) {
         console.log(util.inspect(event, {depth: 5}));
 
-        let params = {
+        const params = {
             Image: {
                 S3Object: {
                     Bucket: event.bucket,
