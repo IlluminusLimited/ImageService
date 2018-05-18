@@ -7,7 +7,6 @@ const async = require('async');
 const util = require('util');
 const InternalServerError = require('./internal-server-error');
 const BadRequest = require('./bad-request');
-const Ok = require('./ok');
 
 module.exports = class ImageUploader {
     constructor(bucketName, fileBuilder, fileWriter) {
@@ -29,12 +28,18 @@ module.exports = class ImageUploader {
         let bucket = this.bucket;
         let year = null;
         let userId = null;
-        if (metadata !== null) {
+        let imageable_id = null;
+        let imageable_type = null;
+
+        if (metadata !== null && metadata !== undefined) {
             year = metadata.year;
             userId = metadata.user_id;
+            imageable_id = metadata.imageable_id;
+            imageable_type = metadata.imageable_type;
         }
 
-        if (data === null || userId === null || metadata === null || year === null) {
+        if (data === null || userId === null || metadata === null || year === null
+            || imageable_id === null || imageable_type === null) {
             let response = new BadRequest(
                 {
                     error: 'Bad Request. Required fields are missing.',
@@ -42,7 +47,9 @@ module.exports = class ImageUploader {
                         data: {
                             metadata: {
                                 user_id: 'uuid',
-                                year: 'integer year'
+                                year: 'integer year',
+                                imageable_type: 'imageable_type',
+                                imageable_id: 'imageable_id'
                             },
                             image: 'base64 encoded image'
                         }
@@ -77,9 +84,10 @@ module.exports = class ImageUploader {
 
         async.waterfall(tasks, (err, data) => {
             console.log('Finished. Resolving response body');
-            if(err) {
+            if (err) {
                 console.log(util.inspect(err, {depth: 5}));
-            } else {
+            }
+            else {
                 console.log(util.inspect(data, {depth: 5}));
             }
 
