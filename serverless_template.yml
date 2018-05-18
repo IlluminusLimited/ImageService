@@ -57,6 +57,7 @@ custom:
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
+    certificateName: image-service-dev.pinster.io
   failure_notification_sns: ImageServiceFailureSNS
   failure_notification_sns_arn:
     Fn::Join:
