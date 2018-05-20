@@ -9,7 +9,6 @@ module.exports = class ImageMover {
         this.newPrefix = _.isUndefined(newPrefix) ? process.env.PREFIX : newPrefix;
         this.bucket = _.isUndefined(bucket) ? process.env.BUCKET : bucket;
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
-        console.log(this.s3.callDeleteAfterCopy);
     }
 
     moveImage(event, callback) {
