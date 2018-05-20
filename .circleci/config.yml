@@ -49,6 +49,7 @@ jobs:
       - run:
           name: Deploy
           command: |
+            ruby serverless.rb 'secrets list-remote' dev false && \
             ruby serverless.rb create_domain dev false && \
             ruby serverless.rb deploy dev false
 
@@ -67,6 +68,7 @@ jobs:
       - run:
           name: Deploy
           command: |
+            ruby serverless.rb 'secrets list-remote' prod false && \
             ruby serverless.rb create_domain prod false && \
             ruby serverless.rb deploy prod false
 

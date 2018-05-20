@@ -5,10 +5,10 @@ provider:
   runtime: nodejs6.10
   region: us-east-1
   stage: ${opt:stage, self:custom.defaultStage}
-  profile: ${self:custom.profiles.${self:provider.stage}, 'default'}
+  profile: ${self:provider.stage, 'default'}
   endpointType: REGIONAL
   deploymentBucket:
-      name: "pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}}"
+      name: "pinster-serverless-deploy-${self:provider.stage}"
   package:
     exclude:
       - .git/**
@@ -18,6 +18,7 @@ provider:
       - "*.md"
 
   iamRoleStatements:
+
     - Effect: 'Allow'
       Action:
         - "sns:Publish"
@@ -50,9 +51,6 @@ provider:
 custom:
   logRetentionInDays: 14
   defaultStage: dev
-  profiles:
-    dev: dev
-    prod: prod
   customDomain:
     domainName: image-service-${self:provider.stage}.pinster.io
     basePath: ''
@@ -131,8 +129,7 @@ functions:
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
-    environmentSecrets:
-      AUTH_TOKEN: '/image-service-${opt:stage}/create-image-token'
+      AUTH_TOKEN: AUTH_TOKEN_CHANGE_ME
 
   notifyFailure:
     handler: lambda/lambda.notifyFailure
@@ -215,4 +212,3 @@ plugins:
   - serverless-pseudo-parameters
   - serverless-domain-manager
   - serverless-plugin-log-retention
-  - serverless-secrets

@@ -9,7 +9,6 @@ module.exports = class PinsterApiClient {
     constructor(baseUrl, authToken) {
         secretsPromise.then(() => {
             this.baseUrl = _.isUndefined(baseUrl) ? process.env.PINSTER_API_URL : baseUrl;
-
             this.authToken = _.isUndefined(authToken) ? process.env.AUTH_TOKEN : authToken;
         }).catch(err => {
             console.log("Failed to retrieve secrets!");
