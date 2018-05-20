@@ -141,10 +141,10 @@ functions:
 
 stepFunctions:
   stateMachines:
-    thumbnailProcessor:
+    imageUploadHandlerMachine:
       name: ${self:custom.thumbnailProcessorName}
       definition:
-        Comment: "StateMachine that turns raw images into thumbnails"
+        Comment: "StateMachine for images"
         StartAt: Moderate
         States:
           Moderate:

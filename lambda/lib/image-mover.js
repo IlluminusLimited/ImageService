@@ -5,9 +5,9 @@ const _ = require('lodash');
 const path = require('path');
 
 module.exports = class ImageMover {
-    constructor(newPrefix, bucketName, s3) {
+    constructor(newPrefix, bucket, s3) {
         this.newPrefix = _.isUndefined(newPrefix) ? process.env.PREFIX : newPrefix;
-        this.bucket = _.isUndefined(bucketName) ? process.env.BUCKET_NAME : bucketName;
+        this.bucket = _.isUndefined(bucket) ? process.env.BUCKET : bucket;
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
         console.log(this.s3.callDeleteAfterCopy);
     }
