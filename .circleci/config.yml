@@ -85,7 +85,7 @@ workflows:
             branches:
               only:
                 - develop
-
+                - newell/serverless_secrets
       - deploy-prod:
           requires:
             - test

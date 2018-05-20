@@ -131,6 +131,8 @@ functions:
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
+    environmentSecrets:
+      AUTH_TOKEN: '/image-service-${opt:stage}/create-image-token'
 
   notifyFailure:
     handler: lambda/lambda.notifyFailure
@@ -213,3 +215,4 @@ plugins:
   - serverless-pseudo-parameters
   - serverless-domain-manager
   - serverless-plugin-log-retention
+  - serverless-secrets
