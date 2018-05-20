@@ -41,6 +41,11 @@ jobs:
       - attach_workspace:
           at: /build
       - run:
+          name: Install rubygems
+          command: |
+            gem install bundler
+            bundle install
+      - run:
           name: Install serverless
           command: npm install -g serverless
       - run:
@@ -59,6 +64,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: /build
+      - run:
+          name: Install rubygems
+          command: |
+            gem install bundler
+            bundle install
       - run:
           name: Install serverless
           command: npm install -g serverless
