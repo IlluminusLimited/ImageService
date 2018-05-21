@@ -5,10 +5,10 @@ provider:
   runtime: nodejs6.10
   region: us-east-1
   stage: ${opt:stage, self:custom.defaultStage}
-  profile: ${self:custom.profiles.${self:provider.stage}, 'default'}
+  profile: ${self:provider.stage, 'default'}
   endpointType: REGIONAL
   deploymentBucket:
-      name: "pinster-serverless-deploy-${self:custom.profiles.${self:provider.stage}}"
+      name: "pinster-serverless-deploy-${self:provider.stage}"
   package:
     exclude:
       - .git/**
@@ -18,6 +18,7 @@ provider:
       - "*.md"
 
   iamRoleStatements:
+
     - Effect: 'Allow'
       Action:
         - "sns:Publish"
@@ -48,10 +49,8 @@ provider:
       Resource:
         - "arn:aws:lambda:::${self:custom.imageUploaderBucket}/*"
 custom:
+  logRetentionInDays: 14
   defaultStage: dev
-  profiles:
-    dev: dev
-    prod: prod
   customDomain:
     domainName: image-service-${self:provider.stage}.pinster.io
     basePath: ''
@@ -76,7 +75,7 @@ custom:
   # https://github.com/serverless/serverless/issues/2749
   imageUploaderBucket: pinster-image-service
   thumbnailProcessorName: thumbnail-processor-${self:provider.stage}
-  pinsterApiUrl: http://api-${self:provider.stage}.pinster.io
+  pinsterApiUrl: https://api-${self:provider.stage}.pinster.io
 
 functions:
   imageUploader:
@@ -118,41 +117,55 @@ functions:
     handler: lambda/lambda.moderate
     memorySize: 128
 
+  moveImage:
+    handler: lambda/lambda.moveImage
+    memorySize: 512
+    environment:
+        BUCKET: ${self:custom.imageUploaderBucket}
+        PREFIX: ""
+        URL: ${self:custom.imageBucketUrl}
+
   notifySuccess:
-    handler: lambda/notifier.notifySuccess
+    handler: lambda/lambda.notifySuccess
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
+      AUTH_TOKEN: AUTH_TOKEN_CHANGE_ME
 
   notifyFailure:
-    handler: lambda/notifier.notifyFailure
+    handler: lambda/lambda.notifyFailure
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
+      SNS_ARN: ${self:custom.failure_notification_sns_arn}
 
 stepFunctions:
   stateMachines:
-    thumbnailProcessor:
+    imageUploadHandlerMachine:
       name: ${self:custom.thumbnailProcessorName}
       definition:
-        Comment: "StateMachine that turns raw images into thumbnails"
+        Comment: "StateMachine for images"
         StartAt: Moderate
         States:
           Moderate:
             Type: Task
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-moderate"
-            Next: NotifyIntegrationsSuccess
+            Next: MoveImage
             Catch:
             - ErrorEquals:
               - ModerationThresholdExceeded
-              Next: NotifyIntegrationsFailure
-          NotifyIntegrationsSuccess:
+              Next: NotifyFailure
+          MoveImage:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-success"
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-moveImage"
+            Next: NotifySuccess
+          NotifySuccess:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notifySuccess"
             End: true
-          NotifyIntegrationsFailure:
+          NotifyFailure:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notify-failure"
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-notifyFailure"
             End: true
 
 resources:
@@ -199,3 +212,4 @@ plugins:
   - serverless-step-functions
   - serverless-pseudo-parameters
   - serverless-domain-manager
+  - serverless-plugin-log-retention

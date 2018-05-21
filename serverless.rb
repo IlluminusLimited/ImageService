@@ -1,4 +1,5 @@
 require 'yaml'
+require 'aws-sdk-secretsmanager'
 
 serverless_command = ARGV[0]
 
@@ -25,7 +26,24 @@ unless supported_stages.include? stage
 end
 
 puts "\nBuilding serverless.yml from serverless_template.yml with correct bucket name for stage: #{stage}"
-serverless = YAML.load_file('serverless_template.yml')
+
+
+serverless_file = File.read('serverless_template.yml')
+
+if ['deploy', 'package'].include?(serverless_command)
+  puts "Doing what fucking serverless can't figure out. Getting secret for auth token"
+
+  client = Aws::SecretsManager::Client.new(region: 'us-east-1')
+
+  secret_response = client.get_secret_value({ secret_id: "image-service-#{stage}", version_stage: 'AWSCURRENT' })
+  token = JSON.parse(secret_response.secret_string)['create-image-token']
+
+  serverless_file.gsub!('AUTH_TOKEN_CHANGE_ME', token)
+else
+  puts "Not grabbing AUTH_TOKEN from secret manager because we weren't run with 'deploy' or 'package'"
+end
+
+serverless = YAML.load(serverless_file)
 bucket_name = serverless['custom']['imageUploaderBucket']
 
 unless bucket_name
@@ -35,7 +53,7 @@ end
 
 puts "Found Bucket name: #{bucket_name}"
 
-supported_stages.each {|supported_stage| bucket_name.gsub!(/-?#{supported_stage}\Z/, '')}
+supported_stages.each { |supported_stage| bucket_name.gsub!(/-?#{supported_stage}\Z/, '') }
 
 # puts "Trimmed bucket name to not include stage suffix: #{bucket_name}"
 
@@ -44,7 +62,7 @@ s3_name = 'S3Bucket' + bucket_name.gsub('-', '').capitalize
 puts "Looking for resource name starting with: #{s3_name}"
 
 # puts "Looking through keys: #{serverless['resources']['Resources'].keys}"
-found_keys = serverless['resources']['Resources'].keys.select {|key| /#{s3_name}.*/.match(key)}
+found_keys = serverless['resources']['Resources'].keys.select { |key| /#{s3_name}.*/.match(key) }
 
 
 if found_keys.size > 1
@@ -83,7 +101,7 @@ warning_message = <<-WARNING
 # https://github.com/serverless/serverless/issues/2486
 # https://github.com/serverless/serverless/issues/2749
 WARNING
-File.open('serverless.yml', 'w') {|file| file.write(warning_message + serverless.to_yaml)}
+File.open('serverless.yml', 'w') { |file| file.write(warning_message + serverless.to_yaml) }
 
 puts "\nCalling Serverless with command: #{serverless_command}\n\n"
 
@@ -91,9 +109,9 @@ return_code = nil
 output = []
 r, io = IO.pipe
 fork do
- return_code = system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
+  return_code = system("sls #{serverless_command} --stage #{stage} -v", out: io, err: :out)
 end
 io.close
-r.each_line {|l| puts l; output << l.chomp}
+r.each_line { |l| puts l; output << l.chomp }
 
 raise 'Serverless command failed!' if return_code

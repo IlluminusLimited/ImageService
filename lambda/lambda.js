@@ -3,6 +3,7 @@ const StepFunctions = require('./lib/step-functions');
 const Moderator = require('./lib/moderator');
 const Notifier = require('./lib/notifier');
 const ThumbnailGenerator = require('./lib/thumbnail-generator');
+const ImageMover = require('./lib/image-mover');
 
 module.exports.upload = (event, context, callback) => {
     let imageUploader = new ImageUploader();
@@ -32,4 +33,9 @@ module.exports.notifySuccess = (event, context, callback) => {
 module.exports.notifyFailure = (event, context, callback) => {
     let notifier = new Notifier();
     notifier.notifyFailure(event, callback);
+};
+
+module.exports.moveImage = (event, context, callback) => {
+    let imageMover = new ImageMover();
+    imageMover.moveImage(event, callback);
 };
