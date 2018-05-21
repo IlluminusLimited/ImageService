@@ -6,20 +6,23 @@ const path = require('path');
 const util = require('util');
 
 module.exports = class ImageMover {
-    constructor(newPrefix, bucket, s3) {
+    constructor(newPrefix, bucket, s3, imageBucketUrl) {
         this.newPrefix = _.isUndefined(newPrefix) ? process.env.PREFIX : newPrefix;
         this.bucket = _.isUndefined(bucket) ? process.env.BUCKET : bucket;
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
+        this.imageBucketUrl = _.isUndefined(imageBucketUrl) ? process.env.URL : imageBucketUrl;
+
     }
 
     moveImage(event, callback) {
         this.parseEvent(event, (err, data) => {
             if (err) {
                 callback(err);
-            } else {
+            }
+            else {
                 this.performMove(event, data, callback);
             }
-        })
+        });
     }
 
     parseEvent(event, callback) {
@@ -35,7 +38,8 @@ module.exports = class ImageMover {
             callback(undefined, {
                 CopySource: path.join(event.Bucket, event.Key),
                 Bucket: this.bucket,
-                Key: newKey
+                Key: newKey,
+                MetadataDirective: 'COPY'
             });
         } catch (err) {
             callback(err);
@@ -54,11 +58,42 @@ module.exports = class ImageMover {
                     if (err) {
                         console.log(err);
                         callback(err);
-                    } else {
-                        callback(undefined, 'Delete Success!');
                     }
-                })
+                    else {
+                        this.buildParamsForNextStep(copyObjectParams, callback);
+                    }
+                });
             }
         });
+    }
+
+    buildParamsForNextStep(copyObjectParams, callback) {
+        const headParams = {
+            Bucket: copyObjectParams.Bucket,
+            Key: copyObjectParams.Key
+        };
+        this.s3.headObject(headParams, (err, data) => {
+            if (err) {
+                console.log(err);
+                callback(err);
+            }
+            else {
+                console.log(util.inspect(data, {depth: 5}));
+                callback(undefined, this.parseMetadataIntoPostBody(data.Metadata));
+            }
+        });
+    }
+
+    parseMetadataIntoPostBody(metadata) {
+        return {
+            'data': {
+                'imageable_id': metadata['imageable_id'],
+                'imageable_type': metadata['imageable_type'],
+                'base_file_name': metadata['base_file_name'],
+                'storage_location_uri': this.imageBucketUrl + '/' +  metadata['base_file_name'],
+                'thumbnailable': true
+            }
+
+        };
     }
 };
