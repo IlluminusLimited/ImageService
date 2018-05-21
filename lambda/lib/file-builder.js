@@ -7,8 +7,9 @@ const BadRequest = require('./bad-request');
 const util = require('util');
 
 module.exports = class FileBuilder {
-    constructor(base64Handler) {
+    constructor(base64Handler, cacheControl) {
         this.base64Handler = _.isUndefined(base64Handler) ? Base64Handler : base64Handler;
+        this.cacheControl = _.isUndefined(cacheControl) ? 'max-age=186400' : cacheControl;
     }
 
     getFile(parsedRequest, callback) {
@@ -27,6 +28,7 @@ module.exports = class FileBuilder {
                 Key: fileName,
                 Body: buffer,
                 ContentType: contentType,
+                CacheControl: this.cacheControl,
                 Metadata: parsedRequest.metadata,
                 Bucket: parsedRequest.bucket
             });

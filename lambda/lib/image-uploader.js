@@ -58,7 +58,6 @@ module.exports = class ImageUploader {
             callback(response);
         }
         else {
-            metadata['cache-control'] = 'max-age=186400';
             callback(undefined, {
                 metadata: metadata,
                 image: image,
