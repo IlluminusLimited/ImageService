@@ -63,7 +63,10 @@ describe('StepFunctions', function () {
             expect(data).to.deep.equal([{
                 statusCode: 200,
                 body: JSON.stringify('Step function is executing'),
-                headers: {}
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                }
             }]);
         });
     });

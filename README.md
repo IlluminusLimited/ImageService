@@ -23,7 +23,6 @@ The basic flow of the service is as follows:
           "data": {
             "metadata": {
               "user_id":"the user's uuid",
-              "year": "2018"
             },
             "image": "a base64 encoded image"
           }

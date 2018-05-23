@@ -16,6 +16,7 @@ describe('FileBuilder', function () {
             Key: 'raw/' + imageMD5,
             Body: Buffer.from(base64Image, 'base64'),
             ContentType: 'image/png',
+            CacheControl: 'max-age=186400',
             Metadata: {
                 'metadata': 'value',
                 "base_file_name": "7f7af91e3a7e514a09b3ad0e364ba3ce"

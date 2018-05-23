@@ -39,7 +39,6 @@ class MockS3 {
         callback(undefined, {
             Metadata: {
                 user_id: 'uuid',
-                year: 'integer year',
                 imageable_type: 'imageable_type',
                 imageable_id: 'imageable_id',
                 base_file_name: "7f7af91e3a7e514a09b3ad0e364ba3ce"

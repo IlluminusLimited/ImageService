@@ -5,11 +5,10 @@ const ImageUploader = require('../lib/image-uploader');
 const util = require('util');
 const Ok = require('../lib/ok');
 
-const goodPayload = {
+const GoodPayload = {
     data: {
         metadata: {
             user_id: 'uuid',
-            year: 'integer year',
             imageable_type: 'imageable_type',
             imageable_id: 'imageable_id'
         },
@@ -17,7 +16,7 @@ const goodPayload = {
     }
 };
 
-const badYearPayload = {
+const BadMetaPayload = {
     data: {
         metadata: {user_id: 'uuid'},
         image: 'base64 encoded image'
@@ -45,7 +44,6 @@ const BadResponsePayload = {
         data: {
             metadata: {
                 user_id: 'uuid',
-                year: 'integer year',
                 imageable_type: 'imageable_type',
                 imageable_id: 'imageable_id'
             },
@@ -58,24 +56,30 @@ describe('ImageUploader', function () {
     it('Correctly parses the event', function () {
         let eventFixture = class {
             constructor() {
-                this.body = JSON.stringify(goodPayload);
+                this.body = JSON.stringify(GoodPayload);
             }
         };
 
         new ImageUploader().parseRequest(new eventFixture(), function (err, result) {
-            expect(result).to.deep.include(goodPayload.data);
+            expect(result).to.deep.include(GoodPayload.data);
         });
     });
 
-    it('Blows up on missing year', function () {
+    it('Blows up on missing imageable', function () {
         let eventFixture = class {
             constructor() {
-                this.body = JSON.stringify({data: badYearPayload});
+                this.body = JSON.stringify({data: BadMetaPayload});
             }
         };
 
         let callback = (err) => {
-            expect(err).to.deep.equal({statusCode: 400, headers: {}, body: BadResponsePayload});
+            expect(err).to.deep.equal({
+                statusCode: 400, headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+
+                }, body: BadResponsePayload
+            });
         };
 
         new ImageUploader('bucket').parseRequest(new eventFixture(), callback);
@@ -84,7 +88,7 @@ describe('ImageUploader', function () {
     it('Actually uploads the file', function () {
         let eventFixture = class {
             constructor() {
-                this.body = JSON.stringify(goodPayload);
+                this.body = JSON.stringify(GoodPayload);
             }
         };
         let callback = (err, data) => {
@@ -93,7 +97,12 @@ describe('ImageUploader', function () {
             }
 
             expect(err).to.equal(undefined);
-            expect(data).to.deep.equal({statusCode: 200, body: JSON.stringify('asdf'), headers: {}}
+            expect(data).to.deep.equal({
+                    statusCode: 200, body: JSON.stringify('asdf'), headers: {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Credentials": true,
+                    }
+                }
             );
         };
 
