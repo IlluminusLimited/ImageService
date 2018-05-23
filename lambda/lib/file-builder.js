@@ -21,7 +21,6 @@ module.exports = class FileBuilder {
         const contentType = `${mimeType.type}/${mimeType.subtype}`;
 
         parsedRequest.metadata['base_file_name'] = baseFileName;
-        console.log(util.inspect(parsedRequest, {depth: 5}));
 
         if (mimeType.type === 'image') {
             callback(undefined, {
