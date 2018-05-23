@@ -86,7 +86,7 @@ module.exports = class ImageUploader {
                 console.log(util.inspect(data, {depth: 5}));
             }
 
-            err === null ? err.build(callback) : data.build(callback);
+            err ? err.build(callback) : data.build(callback);
         });
     }
 };
