@@ -7,6 +7,7 @@ provider:
   stage: ${opt:stage, self:custom.defaultStage}
   profile: ${self:provider.stage, 'default'}
   endpointType: REGIONAL
+  timeout: 30
   deploymentBucket:
       name: "pinster-serverless-deploy-${self:provider.stage}"
   package:
@@ -67,7 +68,7 @@ custom:
         - Ref: AWS::Region
         - Ref: AWS::AccountId
         - ${self:custom.failure_notification_sns}
-  imageBucketUrl: http://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
+  imageBucketUrl: https://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
 
   # if the bucket name is changed then you must go to the resources section and change it there too!
   # This is a stupid limitation of serverless
