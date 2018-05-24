@@ -68,7 +68,7 @@ custom:
         - Ref: AWS::Region
         - Ref: AWS::AccountId
         - ${self:custom.failure_notification_sns}
-  imageBucketUrl: https://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
+  imageBucketUrl: http://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
 
   # if the bucket name is changed then you must go to the resources section and change it there too!
   # This is a stupid limitation of serverless
