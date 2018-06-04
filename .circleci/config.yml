@@ -52,10 +52,11 @@ jobs:
           name: Install deploy packages
           command: npm install
       - run:
+          name: Create Domain
+          command: ruby serverless.rb create_domain dev false
+      - run:
           name: Deploy
-          command: |
-            ruby serverless.rb create_domain dev false && \
-            ruby serverless.rb deploy dev false
+          command: sls deploy --stage dev -v
 
   deploy-prod:
     <<: *defaults
@@ -75,22 +76,27 @@ jobs:
           name: Install deploy packages
           command: npm install
       - run:
+          name: Package
+          command: ruby serverless.rb create_domain prod false
+      - run:
           name: Deploy
-          command: |
-            ruby serverless.rb create_domain prod false && \
-            ruby serverless.rb deploy prod false
+          command: sls deploy --stage prod -v
 
 workflows:
   version: 2
   commit:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - build:
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+      - test
       - deploy-dev:
           requires:
             - test
+            - build
           filters:
             branches:
               only:
@@ -98,6 +104,7 @@ workflows:
       - deploy-prod:
           requires:
             - test
+            - build
           filters:
             branches:
               only:

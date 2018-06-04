@@ -30,21 +30,17 @@ puts "\nBuilding serverless.yml from serverless_template.yml with correct bucket
 
 serverless_file = File.read('serverless_template.yml')
 
-if ['deploy', 'package'].include?(serverless_command)
-  puts "Doing what fucking serverless can't figure out. Getting secret for auth token"
+puts "Doing what fucking serverless can't figure out. Getting secret for auth token"
 
-  client = Aws::SecretsManager::Client.new(region: 'us-east-1')
+client = Aws::SecretsManager::Client.new(region: 'us-east-1')
 
-  secret_response = client.get_secret_value({ secret_id: "image-service-#{stage}", version_stage: 'AWSCURRENT' })
-  token = JSON.parse(secret_response.secret_string)['create-image-token']
+secret_response = client.get_secret_value(secret_id: "image-service-#{stage}", version_stage: 'AWSCURRENT')
+token = JSON.parse(secret_response.secret_string)['create-image-token']
 
-  serverless_file.gsub!('AUTH_TOKEN_CHANGE_ME', token)
-else
-  puts "Not grabbing AUTH_TOKEN from secret manager because we weren't run with 'deploy' or 'package'"
-end
+serverless_file.gsub!('AUTH_TOKEN_CHANGE_ME', token)
 
 serverless = YAML.load(serverless_file)
-bucket_name = serverless['custom']['imageUploaderBucket']
+bucket_name = serverless['custom']['imageUploadBucket']
 
 unless bucket_name
   puts "\n\nFailed to find the uploader bucket in the serverless_template.yml file.\n\n"
@@ -57,13 +53,14 @@ supported_stages.each { |supported_stage| bucket_name.gsub!(/-?#{supported_stage
 
 # puts "Trimmed bucket name to not include stage suffix: #{bucket_name}"
 
-s3_name = 'S3Bucket' + bucket_name.gsub('-', '').capitalize
+s3_name = 'S3Bucket' + bucket_name.gsub('${self:provider.stage}', stage).gsub(/[-.]/, '').capitalize
+s3_name_no_env = 'S3Bucket' + bucket_name.gsub('${self:provider.stage}', '').gsub(/[-.]/, '').capitalize
 
-puts "Looking for resource name starting with: #{s3_name}"
+puts "Looking for resource name starting with: #{s3_name} or #{s3_name_no_env}"
 
 # puts "Looking through keys: #{serverless['resources']['Resources'].keys}"
 found_keys = serverless['resources']['Resources'].keys.select { |key| /#{s3_name}.*/.match(key) }
-
+found_keys += serverless['resources']['Resources'].keys.select { |key| /#{s3_name_no_env}.*/.match(key) }
 
 if found_keys.size > 1
   puts "\n\nFound more than one possible bucket name. Not sure what to do: #{found_keys}\n\n"
@@ -75,12 +72,12 @@ if found_keys.size < 1
   return
 end
 
-new_bucket_name = bucket_name + "-#{stage}"
+new_bucket_name = bucket_name.gsub('${self:provider.stage}', stage)
 
 puts "New bucket name: #{new_bucket_name}"
-serverless['custom']['imageUploaderBucket'] = new_bucket_name
+serverless['custom']['imageUploadBucket'] = new_bucket_name
 
-new_s3_name = 'S3Bucket' + bucket_name.gsub('-', '').capitalize + stage
+new_s3_name = 'S3Bucket' + bucket_name.gsub('${self:provider.stage}', stage).gsub(/[-.]/, '').capitalize
 
 puts "New s3 resource name: #{new_s3_name}"
 serverless['resources']['Resources'][new_s3_name] = serverless['resources']['Resources'].delete(found_keys.first)

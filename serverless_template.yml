@@ -17,9 +17,12 @@ provider:
       - lambda/test
       - node_modules
       - "*.md"
+      - "*.rb"
+      - Gemfile
+      - Gemfile.lock
+      - .eslintrc.json
 
   iamRoleStatements:
-
     - Effect: 'Allow'
       Action:
         - "sns:Publish"
@@ -30,8 +33,9 @@ provider:
       Action:
         - "s3:*"
       Resource:
-        - "arn:aws:s3:::${self:custom.imageUploaderBucket}/*"
-
+        - "arn:aws:s3:::${self:custom.imageHostBucket}/*"
+        - "arn:aws:s3:::${self:custom.imageUploadBucket}/*"
+        
     - Effect: "Allow"
       Action:
         - "states:StartExecution"
@@ -48,16 +52,18 @@ provider:
       Action:
         - "lambda:InvokeFunction"
       Resource:
-        - "arn:aws:lambda:::${self:custom.imageUploaderBucket}/*"
+        - "arn:aws:lambda:::${self:custom.imageUploadBucket}/*"
+
 custom:
   logRetentionInDays: 14
   defaultStage: dev
   customDomain:
-    domainName: image-service-${self:provider.stage}.pinster.io
-    basePath: ''
+    domainName: images.image-service-${self:provider.stage}.pinster.io
+    basePath: '(none)'
     stage: ${self:provider.stage}
     createRoute53Record: true
-    certificateName: image-service-dev.pinster.io
+    certificateName: images.image-service-dev.pinster.io # This is the name of the cert, it covers prod too.
+    endpointType: 'regional'
   failure_notification_sns: ImageServiceFailureSNS${self:provider.stage}
   failure_notification_sns_arn:
     Fn::Join:
@@ -68,13 +74,9 @@ custom:
         - Ref: AWS::Region
         - Ref: AWS::AccountId
         - ${self:custom.failure_notification_sns}
-  imageBucketUrl: http://pinster-image-service-${self:provider.stage}.s3-website-#{AWS::Region}.amazonaws.com
-
-  # if the bucket name is changed then you must go to the resources section and change it there too!
-  # This is a stupid limitation of serverless
-  # https://github.com/serverless/serverless/issues/2486
-  # https://github.com/serverless/serverless/issues/2749
-  imageUploaderBucket: pinster-image-service
+  imageHostBucket: image-service-${self:provider.stage}.pinster.io
+  imageHostBucketUrl: https://${self:custom.imageHostBucket}
+  imageUploadBucket: image-service-upload-${self:provider.stage}.pinster.io
   thumbnailProcessorName: thumbnail-processor-${self:provider.stage}
   pinsterApiUrl: https://api-${self:provider.stage}.pinster.io
 
@@ -84,17 +86,17 @@ functions:
     events:
       - http:
           method: post
-          path: images
           cors: true
+          path: /
     memorySize: 1024
     environment:
-          BUCKET_NAME: ${self:custom.imageUploaderBucket}
+          BUCKET_NAME: ${self:custom.imageUploadBucket}
 
   startExecution:
     handler: lambda/lambda.startExecution
     events:
       - s3:
-          bucket: ${self:custom.imageUploaderBucket}
+          bucket: ${self:custom.imageUploadBucket}
           event: s3:ObjectCreated:*
           rules:
             - prefix: raw/
@@ -107,12 +109,12 @@ functions:
     events:
       - http:
           method: get
-          path: images/generate
+          path: generate
           cors: true
     memorySize: 1024
     environment:
-          BUCKET: ${self:custom.imageUploaderBucket}
-          URL: ${self:custom.imageBucketUrl}
+          BUCKET: ${self:custom.imageHostBucket}
+          URL: ${self:custom.imageHostBucketUrl}
 
   moderate:
     handler: lambda/lambda.moderate
@@ -122,9 +124,9 @@ functions:
     handler: lambda/lambda.moveImage
     memorySize: 512
     environment:
-        BUCKET: ${self:custom.imageUploaderBucket}
+        BUCKET: ${self:custom.imageHostBucket}
         PREFIX: ""
-        URL: ${self:custom.imageBucketUrl}
+        URL: ${self:custom.imageHostBucketUrl}
 
   notifySuccess:
     handler: lambda/lambda.notifySuccess
@@ -172,15 +174,42 @@ stepFunctions:
 resources:
   Resources:
   # if the bucket name is changed then this resource name must be changed! This is a stupid limitation of serverless
+  # This is handled by serverless.rb
   # https://github.com/serverless/serverless/issues/2486
   # https://github.com/serverless/serverless/issues/2749
-    S3BucketPinsterimageservice:
+    S3BucketImageserviceuploadpinsterio:
       Type: 'AWS::S3::Bucket'
       Properties:
+        BucketName: ${self:custom.imageUploadBucket}
+        AccessControl: PublicReadWrite
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders: ['*']
-              AllowedMethods: [GET, PUT, POST, HEAD]
+              AllowedMethods: [PUT, POST]
+              AllowedOrigins: ['*']
+              MaxAge: '3600'
+    S3BucketPermissionsImageUpload:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:custom.imageUploadBucket}
+        PolicyDocument:
+          Statement:
+            - Principal: "*"
+              Action:
+                - s3:PutObject
+              Effect: Allow
+              Sid: "AddPerm"
+              Resource: arn:aws:s3:::${self:custom.imageUploadBucket}/*
+
+    ImageHostBucket:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        BucketName: ${self:custom.imageHostBucket}
+        AccessControl: PublicReadWrite
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT, HEAD]
               AllowedOrigins: ['*']
               MaxAge: '3600'
         WebsiteConfiguration:
@@ -190,21 +219,74 @@ resources:
                     HostName: ${self:custom.customDomain.domainName}
                     HttpRedirectCode: 307
                     Protocol: https
-                    ReplaceKeyPrefixWith: images/generate?key=
+                    ReplaceKeyPrefixWith: generate?key=
                   RoutingRuleCondition:
                     HttpErrorCodeReturnedEquals: 404
-    S3BucketPermissions:
+    S3BucketPermissionsImageHost:
       Type: AWS::S3::BucketPolicy
       Properties:
-        Bucket: ${self:custom.imageUploaderBucket}
+        Bucket: ${self:custom.imageHostBucket}
         PolicyDocument:
           Statement:
             - Principal: "*"
               Action:
                 - s3:GetObject
+                - s3:PutObject
               Effect: Allow
               Sid: "AddPerm"
-              Resource: arn:aws:s3:::${self:custom.imageUploaderBucket}/*
+              Resource: arn:aws:s3:::${self:custom.imageHostBucket}/*
+
+    ImageHostCloudfront:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - ImageHostBucket
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.imageHostBucket}
+          Comment: "Image hosting for ${self:provider.stage}"
+          Origins:
+            - DomainName: "${self:custom.imageHostBucket}.s3-website-us-east-1.amazonaws.com"
+              Id: S3Origin
+              CustomOriginConfig:
+                HTTPPort: '80'
+                HTTPSPort: '443'
+                OriginProtocolPolicy: http-only
+          Enabled: true
+          HttpVersion: 'http2'
+          DefaultRootObject: index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            #This prevents CloudFront from caching our 307 redirect when we need to create a thumbnail on the fly.
+            #This also means that any item we want to serve from CloudFront MUST have a Cache-Control header set.
+            #Otherwise CloudFront will not cache anything.
+            DefaultTTL: 0
+            TargetOriginId: S3Origin
+            ForwardedValues:
+              QueryString: true
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          PriceClass: PriceClass_100
+          ViewerCertificate:
+            AcmCertificateArn: arn:aws:acm:us-east-1:582149114309:certificate/4527b2fc-14a6-417c-a35c-82f5426e516a
+            SslSupportMethod: sni-only
+
+    ImageHostDNSName:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+        HostedZoneName: pinster.io.
+        RecordSets:
+        - Name: "${self:custom.imageHostBucket}"
+          Type: CNAME
+          TTL: 900
+          ResourceRecords:
+            - Fn::GetAtt:
+              - ImageHostCloudfront
+              - DomainName
     ImageServiceFailureSNS:
       Type: "AWS::SNS::Topic"
       Properties:
