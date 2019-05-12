@@ -25,8 +25,8 @@ const MockFileBuilder = class MockFileBuilder {
 };
 
 const MockFileWriter = class MockFileWriter {
-    saveObject(imageFile, callback) {
-        callback(undefined, new Ok('asdf'));
+    saveObject() {
+        return new Ok('asdf');
     }
 };
 
@@ -91,9 +91,9 @@ describe('ImageUploader', function () {
                 this.body = JSON.stringify(GoodPayload);
             }
         };
-        let callback = (err, data) => {
+        const callback = (err, data) => {
             if (err) {
-                console.log(util.inspect(err, {depth: 5}));
+                console.error(util.inspect(err, {depth: 5}));
             }
 
             expect(err).to.equal(undefined);
@@ -106,8 +106,15 @@ describe('ImageUploader', function () {
             );
         };
 
-        let imageUploader = new ImageUploader('bucket', new MockFileBuilder(), new MockFileWriter());
+        let imageUploader = new ImageUploader({
+            tokenProvider: new MockTokenProvider(),
+            bucket: 'bucket',
+            fileBuilder: new MockFileBuilder(),
+            fileWriter: new MockFileWriter()
+        });
 
         return imageUploader.perform(new eventFixture(), callback);
     });
 });
+
+

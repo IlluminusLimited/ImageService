@@ -13,7 +13,7 @@ module.exports = class StepFunctions {
         this.statemachineArn = _.isUndefined(statemachineArn) ? process.env.STATEMACHINE_ARN : statemachineArn;
     }
 
-    startExecution(event, callback) {
+    perform(event, callback) {
         async.map(event.Records, ((s3Record, callback) => {
             const s3 = s3Record.s3;
             const s3Key = s3.object.key;

@@ -12,6 +12,7 @@ module.exports = class FileWriter {
 
     async saveObject(imageFile) {
         return this.s3.putObject(imageFile)
+            .promise()
             .then(data => {
                 return new Ok({bucket: imageFile.Bucket, key: imageFile.Key, message: data});
             }).catch(err => {

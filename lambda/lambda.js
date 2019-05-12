@@ -12,7 +12,7 @@ module.exports.upload = async (event, context, callback) => {
 
 module.exports.startExecution = (event, context, callback) => {
     let stepFunctions = new StepFunctions();
-    stepFunctions.startExecution(event, callback);
+    stepFunctions.perform(event, callback);
 };
 
 module.exports.generateThumbnail = (event, context, callback) => {

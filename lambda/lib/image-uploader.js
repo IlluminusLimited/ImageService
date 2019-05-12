@@ -27,7 +27,6 @@ module.exports = class ImageUploader {
         const imageable_type = decoded.imageable_type;
         const imageable_id = decoded.imageable_id;
 
-
         if (!event.body) {
             throw new BadRequest(
                 {
@@ -69,11 +68,11 @@ module.exports = class ImageUploader {
             .then(this.FileWriter.saveObject)
             .then(saveObjectResponse => {
                 console.debug('Successful response: ', saveObjectResponse);
-                callback(undefined, saveObjectResponse);
+                return callback(undefined, saveObjectResponse.generateResponse());
             })
             .catch(err => {
                 console.error('Error processing: ', err);
-                callback(err);
+                return callback(err.generateResponse());
             });
     }
 };

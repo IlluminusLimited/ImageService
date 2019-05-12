@@ -93,7 +93,7 @@ functions:
           BUCKET_NAME: ${self:custom.imageUploadBucket}
 
   startExecution:
-    handler: lambda/lambda.startExecution
+    handler: lambda/lambda.perform
     events:
       - s3:
           bucket: ${self:custom.imageUploadBucket}

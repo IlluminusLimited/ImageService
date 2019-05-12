@@ -54,7 +54,7 @@ describe('StepFunctions', function () {
     it('can start the step function', function () {
         let stepFunctions = new StepFunctions(new MockStepFunctions());
 
-        stepFunctions.startExecution(MockEvent, (err, data) => {
+        stepFunctions.perform(MockEvent, (err, data) => {
             if (err) {
                 console.log(util.inspect(err, {depth: 5}));
             }
