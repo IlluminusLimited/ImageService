@@ -1,7 +1,6 @@
 'use strict';
 
 const BadRequest = require('./bad-request');
-const Base64RegexMismatch = require('./base64-regex-mismatch');
 
 module.exports = class Base64Handler {
     constructor(image, callback) {
@@ -16,6 +15,6 @@ module.exports = class Base64Handler {
             this.buffer = Buffer.from(this.base64Image, 'base64');
             return callback(undefined, this);
         }
-        callback(new BadRequest(new Base64RegexMismatch('Your image did not match the base64 regex')));
+        callback(new BadRequest('Your image did not match the base64 regex'));
     }
 };

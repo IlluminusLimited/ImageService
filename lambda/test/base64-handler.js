@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const Base64Handler = require('../lib/base64-handler');
-const Base64RegexMismatch = require('../lib/base64-regex-mismatch');
 const BadRequest = require('../lib/bad-request');
 
 describe('Base64 handler', function () {
@@ -22,8 +21,7 @@ describe('Base64 handler', function () {
         let fakeImage = 'blah';
 
         const verifier = (err) => {
-            expect(JSON.stringify(err)).to.equal(JSON.stringify(new BadRequest(
-                new Base64RegexMismatch('Your image did not match the base64 regex'))));
+            expect(JSON.stringify(err)).to.equal(JSON.stringify(new BadRequest('Your image did not match the base64 regex')));
         };
 
         new Base64Handler(fakeImage, verifier);
