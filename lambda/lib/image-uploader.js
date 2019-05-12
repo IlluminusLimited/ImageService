@@ -20,8 +20,7 @@ module.exports = class ImageUploader {
 
     parseRequest(event, callback) {
         console.log('Event received', event);
-        const body = JSON.parse(event.body);
-        if (!body.data) {
+        if (!event.body) {
             let response = new BadRequest(
                 {
                     error: 'Bad Request. Required fields are missing.',
@@ -38,7 +37,7 @@ module.exports = class ImageUploader {
                 });
             callback(response);
         }
-        let data = body.data;
+        const data = JSON.parse(event.body).data;
 
         // TODO - JSON Schema Validation
 
