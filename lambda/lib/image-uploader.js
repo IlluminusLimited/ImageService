@@ -5,35 +5,23 @@ const FileBuilder = require('./file-builder');
 const _ = require('lodash');
 const InternalServerError = require('./internal-server-error');
 const BadRequest = require('./bad-request');
-const Unauthorized = require('./unauthorized');
 const TokenProvider = require('./TokenProvider');
 
 module.exports = class ImageUploader {
-    constructor(bucketName, fileBuilder, fileWriter, tokenProvider) {
-        this.FileBuilder = _.isUndefined(fileBuilder) ? new FileBuilder() : fileBuilder;
-        this.FileWriter = _.isUndefined(fileWriter) ? new FileWriter() : fileWriter;
-        this.bucket = _.isUndefined(bucketName) ? process.env.BUCKET_NAME : bucketName;
+    constructor(params = {}) {
+        this.FileBuilder = _.isUndefined(params.fileBuilder) ? new FileBuilder() : params.fileBuilder;
+        this.FileWriter = _.isUndefined(params.fileWriter) ? new FileWriter() : params.fileWriter;
+        this.bucket = _.isUndefined(params.bucketName) ? process.env.BUCKET_NAME : params.bucketName;
         if (this.bucket === null) {
             throw new InternalServerError('Bucket undefined');
         }
-        this.tokenProvider = _.isUndefined(tokenProvider) ? new TokenProvider() : tokenProvider;
+        this.tokenProvider = _.isUndefined(params.tokenProvider) ? new TokenProvider() : params.tokenProvider;
     }
 
     async parseRequest(event) {
         console.log('Event received', event);
 
-        const authHeader = event.headers.Authorization;
-        let token = null;
-
-        if (authHeader) {
-            token = authHeader.replace('Bearer ', '');
-        }
-
-        if (!token) {
-            throw new Unauthorized('Request missing valid Authorization header.');
-        }
-
-        const decoded = await this.tokenProvider.validate(token);
+        const decoded = await this.tokenProvider.authorize(event);
 
         const user_id = decoded.user_id;
         const imageable_type = decoded.imageable_type;

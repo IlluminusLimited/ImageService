@@ -7,20 +7,12 @@ const Ok = require('../lib/ok');
 
 const GoodPayload = {
     data: {
-        metadata: {
-            user_id: 'uuid',
-            imageable_type: 'imageable_type',
-            imageable_id: 'imageable_id'
-        },
         image: 'base64 encoded image'
     }
 };
 
-const BadMetaPayload = {
-    data: {
-        metadata: {user_id: 'uuid'},
-        image: 'base64 encoded image'
-    }
+const BadPayload = {
+    data: {}
 };
 
 const MockFileBuilder = class MockFileBuilder {
@@ -52,6 +44,17 @@ const BadResponsePayload = {
     }
 };
 
+
+const MockTokenProvider = class MockTokenProvider {
+    async authorize() {
+        return {
+            user_id: 'uuid',
+            imageable_type: 'imageable_type',
+            imageable_id: 'imageable_id'
+        };
+    }
+};
+
 describe('ImageUploader', function () {
     it('Correctly parses the event', function () {
         let eventFixture = class {
@@ -59,30 +62,31 @@ describe('ImageUploader', function () {
                 this.body = JSON.stringify(GoodPayload);
             }
         };
-
-        new ImageUploader().parseRequest(new eventFixture(), function (err, result) {
-            expect(result).to.deep.include(GoodPayload.data);
-        });
+        return new ImageUploader({tokenProvider: new MockTokenProvider()})
+            .parseRequest(new eventFixture())
+            .then(result => {
+                expect(result).to.deep.include(GoodPayload.data);
+            }).catch(error => expect(error).to.equal(undefined));
     });
 
     it('Blows up on missing imageable', function () {
         let eventFixture = class {
             constructor() {
-                this.body = JSON.stringify({data: BadMetaPayload});
+                this.body = JSON.stringify({data: BadPayload});
             }
         };
 
         let callback = (err) => {
             expect(err).to.deep.equal({
                 statusCode: 400, headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
 
                 }, body: BadResponsePayload
             });
         };
 
-        new ImageUploader('bucket').parseRequest(new eventFixture(), callback);
+        return new ImageUploader('bucket').parseRequest(new eventFixture(), callback);
     });
 
     it('Actually uploads the file', function () {
@@ -99,8 +103,8 @@ describe('ImageUploader', function () {
             expect(err).to.equal(undefined);
             expect(data).to.deep.equal({
                     statusCode: 200, body: JSON.stringify('asdf'), headers: {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Credentials": true,
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': true,
                     }
                 }
             );
@@ -108,6 +112,6 @@ describe('ImageUploader', function () {
 
         let imageUploader = new ImageUploader('bucket', new MockFileBuilder(), new MockFileWriter());
 
-        imageUploader.perform(new eventFixture(), callback);
+        return imageUploader.perform(new eventFixture(), callback);
     });
 });
