@@ -12,27 +12,32 @@ module.exports = class FileBuilder {
     }
 
     getFile(parsedRequest, callback) {
-        const base64Handler = new this.base64Handler(parsedRequest.image);
-        const buffer = base64Handler.buffer;
-        const mimeType = base64Handler.mimeType;
-        const baseFileName =  md5(buffer);
-        const fileName = 'raw/' + baseFileName;
-        const contentType = `${mimeType.type}/${mimeType.subtype}`;
+        new this.base64Handler(parsedRequest.image, (err, base64Handler) =>{
+            if(err) {
+                return callback(err);
+            }
+            const buffer = base64Handler.buffer;
+            const mimeType = base64Handler.mimeType;
+            const baseFileName =  md5(buffer);
+            const fileName = 'raw/' + baseFileName;
+            const contentType = `${mimeType.type}/${mimeType.subtype}`;
 
-        parsedRequest.metadata['base_file_name'] = baseFileName;
+            parsedRequest.metadata['base_file_name'] = baseFileName;
 
-        if (mimeType.type === 'image') {
-            callback(undefined, {
-                Key: fileName,
-                Body: buffer,
-                ContentType: contentType,
-                CacheControl: this.cacheControl,
-                Metadata: parsedRequest.metadata,
-                Bucket: parsedRequest.bucket
-            });
-        }
-        else {
-            callback(new BadRequest(`Files of type: ${contentType} are not supported.`));
-        }
+            if (mimeType.type === 'image') {
+                callback(undefined, {
+                    Key: fileName,
+                    Body: buffer,
+                    ContentType: contentType,
+                    CacheControl: this.cacheControl,
+                    Metadata: parsedRequest.metadata,
+                    Bucket: parsedRequest.bucket
+                });
+            }
+            else {
+                callback(new BadRequest(`Files of type: ${contentType} are not supported.`));
+            }
+        });
+
     }
 };
