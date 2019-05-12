@@ -38,7 +38,23 @@ module.exports = class ImageUploader {
             callback(response);
         }
         const data = JSON.parse(event.body).data;
-
+        if (!data) {
+            let response = new BadRequest(
+                {
+                    error: 'Bad Request. Required fields are missing.',
+                    example_body: {
+                        data: {
+                            metadata: {
+                                user_id: 'uuid',
+                                imageable_type: 'imageable_type',
+                                imageable_id: 'imageable_id'
+                            },
+                            image: 'base64 encoded image'
+                        }
+                    }
+                });
+            callback(response);
+        }
         // TODO - JSON Schema Validation
 
         let image = data.image;
