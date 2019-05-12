@@ -30,15 +30,10 @@ const MockFileWriter = class MockFileWriter {
     }
 };
 
-const BadResponsePayload = {
+const badResponsePayload = {
     error: 'Bad Request. Required fields are missing.',
     example_body: {
         data: {
-            metadata: {
-                user_id: 'uuid',
-                imageable_type: 'imageable_type',
-                imageable_id: 'imageable_id'
-            },
             image: 'base64 encoded image'
         }
     }
@@ -76,17 +71,18 @@ describe('ImageUploader', function () {
             }
         };
 
-        let callback = (err) => {
-            expect(err).to.deep.equal({
-                statusCode: 400, headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Credentials': true,
 
-                }, body: BadResponsePayload
+        return new ImageUploader({tokenProvider: new MockTokenProvider(), bucket: 'bucket'})
+            .parseRequest(new eventFixture())
+            .catch((err) => {
+                expect(err).to.deep.equal({
+                    statusCode: 400, headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': true,
+
+                    }, body: badResponsePayload
+                });
             });
-        };
-
-        return new ImageUploader('bucket').parseRequest(new eventFixture(), callback);
     });
 
     it('Actually uploads the file', function () {

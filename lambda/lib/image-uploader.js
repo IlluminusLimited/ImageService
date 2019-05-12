@@ -41,7 +41,7 @@ module.exports = class ImageUploader {
 
         }
         const data = JSON.parse(event.body).data;
-        if (!data) {
+        if (!data || !data.image) {
             throw new BadRequest(
                 {
                     error: 'Bad Request. Required fields are missing.',
