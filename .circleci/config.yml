@@ -6,7 +6,7 @@ version: 2
 defaults: &defaults
   working_directory: /build
   docker:
-    - image: pinster/node:6
+    - image: pinster/node:8
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
   test:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:6
+      - image: circleci/node:8
     steps:
       - checkout
       - run:

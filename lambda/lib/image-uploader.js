@@ -19,6 +19,7 @@ module.exports = class ImageUploader {
     }
 
     parseRequest(event, callback) {
+        console.log('Event received', event);
         let data = JSON.parse(event.body).data;
 
         // TODO - JSON Schema Validation
