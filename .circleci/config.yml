@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Install rubygems
           command: |
-            gem install bundler
+            gem install bundler --no-rdoc --no-ri
             bundle install
       - run:
           name: Install serverless
@@ -67,7 +67,7 @@ jobs:
       - run:
           name: Install rubygems
           command: |
-            gem install bundler
+            gem install bundler --no-rdoc --no-ri
             bundle install
       - run:
           name: Install serverless
