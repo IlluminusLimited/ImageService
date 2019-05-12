@@ -5,9 +5,9 @@ const Notifier = require('./lib/notifier');
 const ThumbnailGenerator = require('./lib/thumbnail-generator');
 const ImageMover = require('./lib/image-mover');
 
-module.exports.upload = (event, context, callback) => {
+module.exports.upload = async (event, context, callback) => {
     let imageUploader = new ImageUploader();
-    imageUploader.perform(event, callback);
+    await imageUploader.perform(event, callback);
 };
 
 module.exports.startExecution = (event, context, callback) => {

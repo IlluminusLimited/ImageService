@@ -10,15 +10,12 @@ module.exports = class FileWriter {
         this.s3 = _.isUndefined(s3) ? new AWSS3() : s3;
     }
 
-    saveObject(imageFile, callback) {
-        this.s3.putObject(imageFile, (err, data) => {
-            if (err) {
-                callback(new InternalServerError(err));
-            }
-            else {
-                callback(undefined, new Ok({bucket: imageFile.Bucket, key: imageFile.Key, message: data}));
-            }
-        });
+    async saveObject(imageFile) {
+        return this.s3.putObject(imageFile)
+            .then(data => {
+                return new Ok({bucket: imageFile.Bucket, key: imageFile.Key, message: data});
+            }).catch(err => {
+                return new InternalServerError(err);
+            });
     }
-
 };

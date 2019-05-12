@@ -11,33 +11,29 @@ module.exports = class FileBuilder {
         this.cacheControl = _.isUndefined(cacheControl) ? 'max-age=86400' : cacheControl;
     }
 
-    getFile(parsedRequest, callback) {
-        new this.base64Handler(parsedRequest.image, (err, base64Handler) =>{
-            if(err) {
-                return callback(err);
-            }
-            const buffer = base64Handler.buffer;
-            const mimeType = base64Handler.mimeType;
-            const baseFileName =  md5(buffer);
-            const fileName = 'raw/' + baseFileName;
-            const contentType = `${mimeType.type}/${mimeType.subtype}`;
+    async getFile(parsedRequest) {
+        return new this.base64Handler().processImage(parsedRequest.image)
+            .then(processedImage => {
+                const buffer = processedImage.buffer;
+                const mimeType = processedImage.mimeType;
+                const baseFileName = md5(buffer);
+                const fileName = 'raw/' + baseFileName;
+                const contentType = `${mimeType.type}/${mimeType.subtype}`;
 
-            parsedRequest.metadata['base_file_name'] = baseFileName;
+                parsedRequest.metadata['base_file_name'] = baseFileName;
 
-            if (mimeType.type === 'image') {
-                callback(undefined, {
-                    Key: fileName,
-                    Body: buffer,
-                    ContentType: contentType,
-                    CacheControl: this.cacheControl,
-                    Metadata: parsedRequest.metadata,
-                    Bucket: parsedRequest.bucket
-                });
-            }
-            else {
-                callback(new BadRequest(`Files of type: ${contentType} are not supported.`));
-            }
-        });
+                if (mimeType.type === 'image') {
+                    return {
+                        Key: fileName,
+                        Body: buffer,
+                        ContentType: contentType,
+                        CacheControl: this.cacheControl,
+                        Metadata: parsedRequest.metadata,
+                        Bucket: parsedRequest.bucket
+                    };
+                }
 
+                throw new BadRequest(`Files of type: ${contentType} are not supported.`);
+            });
     }
 };
