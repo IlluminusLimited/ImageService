@@ -20,7 +20,7 @@ module.exports = class Moderator {
                     Name: event.Key
                 }
             },
-            MinConfidence: 75
+            MinConfidence: 99
         };
 
         console.log(params);
