@@ -35,9 +35,9 @@ puts "Doing what fucking serverless can't figure out. Getting secret for auth to
 client = Aws::SecretsManager::Client.new(region: 'us-east-1')
 
 secret_response = client.get_secret_value(secret_id: "image-service-#{stage}", version_stage: 'AWSCURRENT')
-pinster_api_public_key = JSON.parse(secret_response.secret_string)['PINSTER_API_PUBLIC_KEY']
+api_public_key = JSON.parse(secret_response.secret_string)['API_PUBLIC_KEY']
 
-serverless_file.gsub!('PINSTER_API_PUBLIC_KEY_CHANGE_ME', pinster_api_public_key)
+serverless_file.gsub!('API_PUBLIC_KEY_CHANGE_ME', api_public_key)
 
 private_key = JSON.parse(secret_response.secret_string)['PRIVATE_KEY']
 

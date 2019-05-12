@@ -79,6 +79,7 @@ custom:
   imageUploadBucket: image-service-upload-${self:provider.stage}.pinster.io
   thumbnailProcessorName: thumbnail-processor-${self:provider.stage}
   pinsterApiUrl: https://api-${self:provider.stage}.pinster.io
+  imageServiceUrl: https://${self:custom.customDomain.domainName}
 
 functions:
   imageUploader:
@@ -91,7 +92,9 @@ functions:
     memorySize: 1024
     environment:
           BUCKET_NAME: ${self:custom.imageUploadBucket}
-          PINSTER_API_PUBLIC_KEY: PINSTER_API_PUBLIC_KEY_CHANGE_ME
+          API_PUBLIC_KEY: API_PUBLIC_KEY_CHANGE_ME
+          PINSTER_API_URL: ${self:custom.pinsterApiUrl}
+          IMAGE_SERVICE_URL: ${self:custom.imageServiceUrl}
 
   startExecution:
     handler: lambda/lambda.perform
@@ -135,6 +138,7 @@ functions:
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
       PRIVATE_KEY: PRIVATE_KEY_CHANGE_ME
+      IMAGE_SERVICE_URL: ${self:custom.imageServiceUrl}
 
   notifyFailure:
     handler: lambda/lambda.notifyFailure
@@ -142,6 +146,8 @@ functions:
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
       SNS_ARN: ${self:custom.failure_notification_sns_arn}
+      PRIVATE_KEY: PRIVATE_KEY_CHANGE_ME
+      IMAGE_SERVICE_URL: ${self:custom.imageServiceUrl}
 
 stepFunctions:
   stateMachines:
