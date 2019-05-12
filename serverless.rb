@@ -35,9 +35,14 @@ puts "Doing what fucking serverless can't figure out. Getting secret for auth to
 client = Aws::SecretsManager::Client.new(region: 'us-east-1')
 
 secret_response = client.get_secret_value(secret_id: "image-service-#{stage}", version_stage: 'AWSCURRENT')
-token = JSON.parse(secret_response.secret_string)['create-image-token']
+pinster_api_public_key = JSON.parse(secret_response.secret_string)['PINSTER_API_PUBLIC_KEY']
 
-serverless_file.gsub!('AUTH_TOKEN_CHANGE_ME', token)
+serverless_file.gsub!('PINSTER_API_PUBLIC_KEY_CHANGE_ME', pinster_api_public_key)
+
+private_key = JSON.parse(secret_response.secret_string)['PRIVATE_KEY']
+
+serverless_file.gsub!('PRIVATE_KEY_CHANGE_ME', private_key)
+
 
 serverless = YAML.load(serverless_file)
 bucket_name = serverless['custom']['imageUploadBucket']

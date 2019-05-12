@@ -91,6 +91,7 @@ functions:
     memorySize: 1024
     environment:
           BUCKET_NAME: ${self:custom.imageUploadBucket}
+          PINSTER_API_PUBLIC_KEY: PINSTER_API_PUBLIC_KEY_CHANGE_ME
 
   startExecution:
     handler: lambda/lambda.perform
@@ -133,7 +134,7 @@ functions:
     memorySize: 128
     environment:
       PINSTER_API_URL: ${self:custom.pinsterApiUrl}
-      AUTH_TOKEN: AUTH_TOKEN_CHANGE_ME
+      PRIVATE_KEY: PRIVATE_KEY_CHANGE_ME
 
   notifyFailure:
     handler: lambda/lambda.notifyFailure

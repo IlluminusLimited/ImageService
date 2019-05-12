@@ -29,7 +29,6 @@ class TokenProvider {
         } catch(err) {
             throw new Forbidden(`Token was invalid. Error: ${JSON.stringify(err)}`);
         }
-
     }
 }
 
