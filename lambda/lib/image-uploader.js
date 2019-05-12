@@ -7,19 +7,41 @@ const async = require('async');
 const util = require('util');
 const InternalServerError = require('./internal-server-error');
 const BadRequest = require('./bad-request');
+const Unauthorized = require('./unauthorized');
+const TokenProvider = require('./TokenProvider');
 
 module.exports = class ImageUploader {
-    constructor(bucketName, fileBuilder, fileWriter) {
+    constructor(bucketName, fileBuilder, fileWriter, tokenProvider) {
         this.FileBuilder = _.isUndefined(fileBuilder) ? new FileBuilder() : fileBuilder;
         this.FileWriter = _.isUndefined(fileWriter) ? new FileWriter() : fileWriter;
         this.bucket = _.isUndefined(bucketName) ? process.env.BUCKET_NAME : bucketName;
         if (this.bucket === null) {
             throw new InternalServerError('Bucket undefined');
         }
+        this.tokenProvider = _.isUndefined(tokenProvider) ? new TokenProvider() : tokenProvider;
     }
 
-    parseRequest(event, callback) {
+    async parseRequest(event, callback) {
         console.log('Event received', event);
+
+        const authHeader = event.headers.Authorization;
+        let token = null;
+
+        if (authHeader) {
+            token = authHeader.replace('Bearer ', '');
+        }
+
+        if (!token) {
+            return callback(new Unauthorized('Request missing valid Authorization header.'));
+        }
+
+        const decoded = await this.tokenProvider.validate(token).catch(error => {
+            return callback(error);
+        });
+
+
+
+
         if (!event.body) {
             let response = new BadRequest(
                 {
