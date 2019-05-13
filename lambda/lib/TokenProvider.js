@@ -34,11 +34,27 @@ class TokenProvider {
             return jwt.verify(token, this.apiPublicKey, {
                 audience: this.imageServiceUrl,
                 issuer: this.pinsterApiUrl,
+                ignoreExpiration: false,
+                ignoreNotBefore: false,
+                clockTolerance: 10,
                 algorithms: ['RS256']
             });
         } catch (err) {
             throw new Forbidden(`Token was invalid. Error: ${JSON.stringify(err)}`);
         }
+    }
+
+    //Returns parsed payload of JWT
+    async generate(payload = {}) {
+        const options = {
+            issuer: this.imageServiceUrl,
+            audience: this.pinsterApiUrl,
+            expiresIn: '10 seconds',
+            notBefore: '-1ms',
+            algorithm: 'RS256'
+        };
+
+        return jwt.sign(payload, this.privateKey, options);
     }
 }
 
