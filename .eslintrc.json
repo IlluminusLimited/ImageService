@@ -29,7 +29,8 @@
         "allow": [
           "log",
           "warn",
-          "error"
+          "error",
+          "debug"
         ]
       }
     ]

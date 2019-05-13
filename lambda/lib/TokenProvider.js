@@ -15,6 +15,7 @@ class TokenProvider {
         this.pinsterApiUrl = params.pinsterApiUrl || process.env.PINSTER_API_URL;
         // The private key to encode JWTs with
         this.privateKey = params.privateKey || process.env.PRIVATE_KEY;
+        console.debug('TokenProvider params: ', this);
     }
 
     //Returns parsed payload of JWT

@@ -39,3 +39,4 @@ module.exports = class Notifier {
         return this.apiClient.post('/v1/images/', imageParams, tokenParams);
     }
 };
+
