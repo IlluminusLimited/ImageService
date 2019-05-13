@@ -16,7 +16,6 @@ module.exports.upload = async (event) => {
             console.error('Error processing: ', err);
             return err;
         });
-
 };
 
 module.exports.startExecution = (event, context, callback) => {
@@ -34,14 +33,29 @@ module.exports.moderate = (event, context, callback) => {
     return moderator.moderate(event, callback);
 };
 
-module.exports.notifySuccess = async (event, context, callback) => {
+module.exports.notifySuccess = async (event) => {
     const notifier = new Notifier();
-    return await notifier.notifySuccess(event, callback);
+    return await notifier.notifySuccess(event)
+        .then(imageCreateResponse => {
+            console.debug('Successful response: ', imageCreateResponse);
+            return imageCreateResponse;
+        }).catch(err => {
+            console.error('Error processing: ', err);
+            return err;
+        });
 };
 
-module.exports.notifyFailure = async (event, context, callback) => {
+module.exports.notifyFailure = async (event) => {
     const notifier = new Notifier();
-    return await notifier.notifyFailure(event, callback);
+    return await notifier.notifyFailure(event)
+        .then(publishEvent => {
+            console.debug('Successful response: ', publishEvent);
+            return publishEvent;
+        }).catch(err => {
+            console.error('Error processing: ', err);
+            return err;
+        });
+
 };
 
 module.exports.moveImage = (event, context, callback) => {

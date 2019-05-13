@@ -8,23 +8,18 @@ const AWS = require('aws-sdk');
 module.exports = class Notifier {
     constructor(params = {}) {
         this.apiClient = _.isUndefined(params.apiClient) ? new ApiClient() : params.apiClient;
-        this.snsClient = _.isUndefined(params.snsClient) ? new AWS.SNS() : params.snsClient;
+        this.snsPublish = _.isUndefined(params.snsPublish) ? (params) => {
+            return new AWS.SNS().publish(params).promise();
+        } : params.snsPublish;
         this.snsArn = _.isUndefined(params.snsArn) ? process.env.SNS_ARN : params.snsArn;
     }
 
-    async notifySuccess(imageParams, callback) {
+    async notifySuccess(imageParams) {
         console.log(util.inspect(imageParams, {depth: 5}));
-        return this.createImage(imageParams)
-            .then(imageCreateResponse => {
-                console.debug('Successful response: ', imageCreateResponse);
-                return callback(undefined, imageCreateResponse);
-            }).catch(err => {
-                console.error('Error processing: ', err);
-                return callback(err);
-            });
+        return this.createImage(imageParams);
     }
 
-    async notifyFailure(notificationParams, callback) {
+    async notifyFailure(notificationParams) {
         console.log(util.inspect(notificationParams, {depth: 5}));
 
         let eventText = JSON.stringify(notificationParams, null, 2);
@@ -33,7 +28,7 @@ module.exports = class Notifier {
             Subject: 'Image Moderation Failure',
             TopicArn: this.snsArn
         };
-        return this.snsClient.publish(params, callback);
+        return this.snsPublish(params);
     }
 
 

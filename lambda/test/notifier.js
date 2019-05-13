@@ -19,63 +19,24 @@ const MockApiClient = class MockApiClient {
     }
 };
 
-const MockSNSClient = class MockSNSClient {
-    constructor(shouldExplode) {
-        this.shouldExplode = shouldExplode;
-    }
-
-    publish(notificationParameters, callback) {
-        if (this.shouldExplode) {
-            callback({'error': 'shits fucked yo'});
-        }
-        else {
-            callback(undefined, notificationParameters);
-        }
-    }
-};
+const mockSNSClient = async (params) => {return params;};
 
 describe('Notifier', function () {
     it('can notify success', function () {
         let notifier = new Notifier({apiClient: new MockApiClient(false)});
 
-        let dataOutput = undefined;
-        let errorOutput = undefined;
-
-        const callback = (err, data) => {
-            if (err) {
-                console.error(util.inspect(err, {depth: 5}));
-                return errorOutput = err;
-            }
-
-            return dataOutput = data;
-        };
-
-        return notifier.notifySuccess(mockImageParams, callback)
-            .then(() => {
-                expect(errorOutput).to.equal(undefined);
-                expect(dataOutput).to.deep.equal(mockImageParams);
+        return notifier.notifySuccess(mockImageParams)
+            .then((response) => {
+                expect(response).to.deep.equal(mockImageParams);
             });
     });
 
     it('can notify failure', function () {
-        let notifier = new Notifier({snsClient: new MockSNSClient(false)});
+        let notifier = new Notifier({snsPublish:  mockSNSClient});
 
-        let dataOutput = undefined;
-        let errorOutput = undefined;
-
-        const callback = (err, data) => {
-            if (err) {
-                console.error(util.inspect(err, {depth: 5}));
-                return errorOutput = err;
-            }
-
-            return dataOutput = data;
-        };
-
-        return notifier.notifyFailure({error: 'idk'}, callback)
-            .then(() => {
-                expect(errorOutput).to.equal(undefined);
-                return expect(dataOutput).to.deep.equal({
+        return notifier.notifyFailure({error: 'idk'})
+            .then((response) => {
+                return expect(response).to.deep.equal({
                     Message: JSON.stringify({error: 'idk'}, null, 2),
                     Subject: 'Image Moderation Failure',
                     TopicArn: undefined
