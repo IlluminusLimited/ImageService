@@ -138,21 +138,6 @@ describe('ImageUploader', function () {
                 this.body = JSON.stringify(goodPayload);
             }
         };
-        const callback = (err, data) => {
-            if (err) {
-                console.error(util.inspect(err, {depth: 5}));
-            }
-
-            expect(err).to.equal(undefined);
-            expect(data).to.deep.equal(
-                {
-                    statusCode: 200, body: JSON.stringify('asdf'), headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Credentials': true,
-                    }
-                }
-            );
-        };
 
         const imageUploader = new ImageUploader({
             tokenProvider: new MockTokenProvider(),
@@ -161,7 +146,17 @@ describe('ImageUploader', function () {
             fileWriter: new MockFileWriter()
         });
 
-        return imageUploader.perform(new eventFixture(), callback);
+        return imageUploader.perform(new eventFixture())
+            .then(data => {
+                return expect(data).to.deep.equal(
+                    {
+                        statusCode: 200, body: 'asdf', headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Credentials': true,
+                        }
+                    }
+                );
+            });
     });
 
 
@@ -180,10 +175,10 @@ describe('ImageUploader', function () {
             fileWriter: new MockFileWriter()
         });
 
-        return imageUploader.perform(new eventFixture())
-            .then((data) => {
-                expect(data).to.equal(undefined);
-            }).catch(err => {
+
+        return imageUploader.perform(new eventFixture()).then(() => {
+            throw new Error('Should not get here');
+        }).catch(err => {
                 return expect(err).to.deep.equal(
                     {
                         statusCode: 400, body: {
@@ -200,9 +195,9 @@ describe('ImageUploader', function () {
                         }
                     }
                 );
-            });
+            }
+        );
     });
-
 });
 
 
