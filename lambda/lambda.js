@@ -5,9 +5,18 @@ const Notifier = require('./lib/notifier');
 const ThumbnailGenerator = require('./lib/thumbnail-generator');
 const ImageMover = require('./lib/image-mover');
 
-module.exports.upload = async (event, context, callback) => {
+module.exports.upload = async (event) => {
     const imageUploader = new ImageUploader();
-    return await imageUploader.perform(event, callback);
+    return await imageUploader.perform(event)
+        .then(saveObjectResponse => {
+            console.debug('Successful response: ', saveObjectResponse);
+            return saveObjectResponse;
+        })
+        .catch(err => {
+            console.error('Error processing: ', err);
+            return err;
+        });
+
 };
 
 module.exports.startExecution = (event, context, callback) => {

@@ -171,17 +171,6 @@ describe('ImageUploader', function () {
                 this.body = JSON.stringify(badVerbosePayload);
             }
         };
-        let dataOutput = undefined;
-        let errorOutput = undefined;
-
-        const callback = (err, data) => {
-            if (err) {
-                console.error(util.inspect(err, {depth: 5}));
-                return errorOutput = err;
-            }
-
-            return dataOutput = data;
-        };
 
 
         const imageUploader = new ImageUploader({
@@ -191,13 +180,13 @@ describe('ImageUploader', function () {
             fileWriter: new MockFileWriter()
         });
 
-
-        return imageUploader.perform(new eventFixture(), callback)
-            .then(() => {
-                expect(dataOutput).to.equal(undefined);
-                return expect(errorOutput).to.deep.equal(
+        return imageUploader.perform(new eventFixture())
+            .then((data) => {
+                expect(data).to.equal(undefined);
+            }).catch(err => {
+                return expect(err).to.deep.equal(
                     {
-                        statusCode: 400, body: JSON.stringify({
+                        statusCode: 400, body: {
                             errors: {
                                 data: {
                                     name: 'Must be between 3 and 140 characters A-z0-9. Omit or null the field otherwise.',
@@ -205,7 +194,7 @@ describe('ImageUploader', function () {
                                     featured: 'Must be an integer. Omit or null the field otherwise.',
                                 }
                             }
-                        }), headers: {
+                        }, headers: {
                             'Access-Control-Allow-Origin': '*',
                             'Access-Control-Allow-Credentials': true,
                         }

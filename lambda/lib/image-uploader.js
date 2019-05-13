@@ -99,17 +99,9 @@ module.exports = class ImageUploader {
         return metadata;
     }
 
-    async perform(event, callback) {
+    async perform(event) {
         return this.parseRequest(event)
             .then(this.FileBuilder.getFile)
-            .then(this.FileWriter.saveObject)
-            .then(saveObjectResponse => {
-                console.debug('Successful response: ', saveObjectResponse);
-                return callback(undefined, saveObjectResponse);
-            })
-            .catch(err => {
-                console.error('Error processing: ', err);
-                return callback(err);
-            });
+            .then(this.FileWriter.saveObject);
     }
 };
