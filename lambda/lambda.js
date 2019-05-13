@@ -10,7 +10,7 @@ module.exports.upload = async (event) => {
     return await imageUploader.perform(event)
         .then(saveObjectResponse => {
             console.debug('Successful response: ', saveObjectResponse);
-            return saveObjectResponse;
+            return saveObjectResponse.generateResponse();
         })
         .catch(err => {
             console.error('Error processing: ', err);
@@ -38,7 +38,7 @@ module.exports.notifySuccess = async (event) => {
     return await notifier.notifySuccess(event)
         .then(imageCreateResponse => {
             console.debug('Successful response: ', imageCreateResponse);
-            return imageCreateResponse;
+            return imageCreateResponse.generateResponse();
         }).catch(err => {
             console.error('Error processing: ', err);
             return err;
@@ -50,7 +50,7 @@ module.exports.notifyFailure = async (event) => {
     return await notifier.notifyFailure(event)
         .then(publishEvent => {
             console.debug('Successful response: ', publishEvent);
-            return publishEvent;
+            return publishEvent.generateResponse();
         }).catch(err => {
             console.error('Error processing: ', err);
             return err;
