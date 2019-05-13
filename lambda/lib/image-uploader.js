@@ -105,11 +105,11 @@ module.exports = class ImageUploader {
             .then(this.FileWriter.saveObject)
             .then(saveObjectResponse => {
                 console.debug('Successful response: ', saveObjectResponse);
-                return callback(undefined, saveObjectResponse.generateResponse());
+                return callback(undefined, saveObjectResponse);
             })
             .catch(err => {
                 console.error('Error processing: ', err);
-                return callback(err.generateResponse());
+                return callback(err);
             });
     }
 };
