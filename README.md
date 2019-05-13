@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/IlluminusLimited/ImageService.svg?style=shield)](https://circleci.com/gh/PinsterTeam/ImageService)
+[![CircleCI](https://circleci.com/gh/IlluminusLimited/ImageService.svg?style=shield)](https://circleci.com/gh/IlluminusLimited/ImageService)
 
 # Pinster - ImageService
 
