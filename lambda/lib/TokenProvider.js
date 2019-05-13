@@ -15,7 +15,7 @@ class TokenProvider {
         this.pinsterApiUrl = params.pinsterApiUrl || process.env.PINSTER_API_URL;
         // The private key to encode JWTs with
         this.privateKey = params.privateKey || process.env.PRIVATE_KEY;
-        console.debug('TokenProvider params: ', this);
+        console.debug(`TokenProvider params: ${JSON.stringify(this)}`);
     }
 
     //Returns parsed payload of JWT
@@ -32,7 +32,7 @@ class TokenProvider {
         }
 
         try {
-            return jwt.verify(token, this.apiPublicKey, {
+            return jwt.verify(token, this.apiPublicKey.trim(), {
                 audience: this.imageServiceUrl,
                 issuer: this.pinsterApiUrl,
                 ignoreExpiration: false,
