@@ -10,11 +10,15 @@ module.exports.upload = async (event) => {
     return await imageUploader.perform(event)
         .then(saveObjectResponse => {
             console.debug('Successful response: ', saveObjectResponse);
-            return saveObjectResponse.generateResponse();
+            const awsResponse = saveObjectResponse.generateResponse();
+            console.debug('Response for aws: ', awsResponse);
+            return awsResponse;
         })
         .catch(err => {
             console.error('Error processing: ', err);
-            return err.generateResponse();
+            const awsResponse = err.generateResponse();
+            console.debug('Response for aws: ', awsResponse);
+            return awsResponse;
         });
 };
 
@@ -38,10 +42,14 @@ module.exports.notifySuccess = async (event) => {
     return await notifier.notifySuccess(event)
         .then(imageCreateResponse => {
             console.debug('Successful response: ', imageCreateResponse);
-            return imageCreateResponse.generateResponse();
+            const awsResponse = imageCreateResponse.generateResponse();
+            console.debug('Response for aws: ', awsResponse);
+            return awsResponse;
         }).catch(err => {
             console.error('Error processing: ', err);
-            return err.generateResponse();
+            const awsResponse = err.generateResponse();
+            console.debug('Response for aws: ', awsResponse);
+            return awsResponse;
         });
 };
 
@@ -50,10 +58,14 @@ module.exports.notifyFailure = async (event) => {
     return await notifier.notifyFailure(event)
         .then(publishEvent => {
             console.debug('Successful response: ', publishEvent);
-            return publishEvent.generateResponse();
+            const awsResponse = publishEvent.generateResponse();
+            console.debug('Response for aws: ', awsResponse);
+            return awsResponse;
         }).catch(err => {
             console.error('Error processing: ', err);
-            return err.generateResponse();
+            const awsResponse = err.generateResponse();
+            console.debug('Response for aws: ', awsResponse);
+            return awsResponse;
         });
 
 };
