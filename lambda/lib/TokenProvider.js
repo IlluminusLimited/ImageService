@@ -42,7 +42,11 @@ class TokenProvider {
             });
         } catch (err) {
             console.error('Raw JWT error: ', err);
-            throw new Forbidden(`Token was invalid. Error: ${JSON.stringify(err)}`);
+            let stringifiedError = JSON.stringify(err);
+            if (!stringifiedError) {
+                stringifiedError = 'Something was wrong with the signature verification step.';
+            }
+            throw new Forbidden(`Token was invalid. Error: ${stringifiedError}`);
         }
     }
 
