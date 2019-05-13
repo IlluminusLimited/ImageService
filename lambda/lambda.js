@@ -14,7 +14,7 @@ module.exports.upload = async (event) => {
         })
         .catch(err => {
             console.error('Error processing: ', err);
-            return err;
+            return err.generateResponse();
         });
 };
 
@@ -41,7 +41,7 @@ module.exports.notifySuccess = async (event) => {
             return imageCreateResponse.generateResponse();
         }).catch(err => {
             console.error('Error processing: ', err);
-            return err;
+            return err.generateResponse();
         });
 };
 
@@ -53,7 +53,7 @@ module.exports.notifyFailure = async (event) => {
             return publishEvent.generateResponse();
         }).catch(err => {
             console.error('Error processing: ', err);
-            return err;
+            return err.generateResponse();
         });
 
 };
