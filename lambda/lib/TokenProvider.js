@@ -55,7 +55,7 @@ class TokenProvider {
             algorithm: 'RS256'
         };
 
-        return jwt.sign(payload, this.privateKey, options);
+        return jwt.sign(payload, this.privateKey.trim(), options);
     }
 }
 
