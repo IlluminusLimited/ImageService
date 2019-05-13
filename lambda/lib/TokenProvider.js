@@ -41,6 +41,7 @@ class TokenProvider {
                 algorithms: ['RS256']
             });
         } catch (err) {
+            console.error('Raw JWT error: ', err);
             throw new Forbidden(`Token was invalid. Error: ${JSON.stringify(err)}`);
         }
     }
