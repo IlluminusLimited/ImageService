@@ -47,7 +47,7 @@ jobs:
             bundle install
       - run:
           name: Install serverless
-          command: sudo npm install -g serverless
+          command: npm install -g serverless
       - run:
           name: Install deploy packages
           command: npm install
@@ -71,7 +71,7 @@ jobs:
             bundle install
       - run:
           name: Install serverless
-          command: sudo npm install -g serverless
+          command: npm install -g serverless
       - run:
           name: Install deploy packages
           command: npm install
