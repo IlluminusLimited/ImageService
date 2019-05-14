@@ -159,7 +159,6 @@ describe('ImageUploader', function () {
             });
     });
 
-
     it('Correctly barfs on bad data', function () {
         let eventFixture = class {
             constructor() {

@@ -22,7 +22,7 @@ module.exports.upload = async (event) => {
                 return awsResponse;
             } catch(error) {
                 console.error('Error generating error response', error);
-                return err;
+                throw err;
             }
         });
 };
@@ -59,7 +59,7 @@ module.exports.notifySuccess = async (event) => {
                 return awsResponse;
             } catch(error) {
                 console.error('Error generating error response', error);
-                return err;
+                throw err;
             }
         });
 };
@@ -81,7 +81,7 @@ module.exports.notifyFailure = async (event) => {
                 return awsResponse;
             } catch(error) {
                 console.error('Error generating error response', error);
-                return err;
+                throw err;
             }
         });
 };
