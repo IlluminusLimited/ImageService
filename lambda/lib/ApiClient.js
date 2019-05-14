@@ -40,6 +40,7 @@ module.exports = class ApiClient {
 
     async post(pathOrUrl, body = {}, tokenParams = {}) {
         const url = this.pathToUrl(pathOrUrl);
+        console.log('Payload to post: ', body);
 
         return fetch(url, {
             headers: await this.buildAuthHeader(tokenParams),
@@ -51,10 +52,12 @@ module.exports = class ApiClient {
     }
 
     async buildAuthHeader(tokenParams) {
-        return {
+        const headers = {
             Authorization: 'Bearer ' + await this.tokenProvider.generate(tokenParams),
             'content-type': 'application/json'
         };
+        console.log('Generated headers: ', headers);
+        return headers;
     }
 
     pathToUrl(rawPath) {
