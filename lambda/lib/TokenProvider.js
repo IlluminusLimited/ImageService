@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken');
 const Forbidden = require('./forbidden');
 const Unauthorized = require('./unauthorized');
-const Base64 = require('js-base64');
+const Base64 = require('js-base64').Base64;
 
 function parseBase64Keys(key) {
     if (key) {
