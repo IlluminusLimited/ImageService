@@ -15,12 +15,12 @@ module.exports = class Notifier {
     }
 
     async notifySuccess(imageParams) {
-        console.log(util.inspect(imageParams, {depth: 5}));
+        console.log('Notify Success params: ', util.inspect(imageParams, {depth: 5}));
         return this.createImage(imageParams);
     }
 
     async notifyFailure(notificationParams) {
-        console.log(util.inspect(notificationParams, {depth: 5}));
+        console.log('Notify Failure params', util.inspect(notificationParams, {depth: 5}));
 
         let eventText = JSON.stringify(notificationParams, null, 2);
         let params = {

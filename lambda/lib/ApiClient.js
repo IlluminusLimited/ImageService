@@ -1,5 +1,6 @@
 const TokenProvider = require('./TokenProvider');
 const fetch = require('node-fetch');
+const util = require('util');
 
 function handleErrors(error) {
     console.error('Api level error: ', error);
@@ -8,7 +9,7 @@ function handleErrors(error) {
 
 function handleResponse(response) {
     if (!response.ok) {
-        console.warn('Response was not successful.', response);
+        console.warn('Response was not successful.', util.inspect(response, {depth: 10}));
         throw Error(`Error: ${response.status}. statusText: ${response.statusText}. Url: ${response.url}`);
     }
     return response;
@@ -40,12 +41,13 @@ module.exports = class ApiClient {
 
     async post(pathOrUrl, body = {}, tokenParams = {}) {
         const url = this.pathToUrl(pathOrUrl);
-        console.log('Payload to post: ', body);
+        const payload = JSON.stringify(body);
+        console.log('Payload to post: ', payload);
 
         return fetch(url, {
             headers: await this.buildAuthHeader(tokenParams),
             method: 'POST',
-            body: JSON.stringify(body)
+            body: payload
         }).catch(handleErrors)
             .then(handleResponse)
             .then(extractJson);
