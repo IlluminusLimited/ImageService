@@ -3,18 +3,27 @@
 const jwt = require('jsonwebtoken');
 const Forbidden = require('./forbidden');
 const Unauthorized = require('./unauthorized');
+const Base64 = require('js-base64');
+
+function parseBase64Keys(key) {
+    if (key) {
+        return Base64.decode(key);
+    }
+}
 
 //Used for communicating with PinsterApi
 class TokenProvider {
+
+
     constructor(params = {}) {
         // Pinster's generated JWT public key (not to be confused with auth0 stuff which has nothing to do with this)
-        this.apiPublicKey = params.apiPublicKey || process.env.API_PUBLIC_KEY;
+        this.apiPublicKey = params.apiPublicKey || parseBase64Keys(process.env.API_PUBLIC_KEY);
         //We only receive tokens targeted at us (check aud on incoming tokens against this) and we only generate tokens for the api (use this for iss)
         this.imageServiceUrl = params.imageServiceUrl || process.env.IMAGE_SERVICE_URL;
         // We only generate tokens for PinsterApi to consume (use this as iss) and we only consume tokens from the api (check the aud against this value)
-        this.pinsterApiUrl = params.pinsterApiUrl || process.env.PINSTER_API_URL;
+        this.pinsterApiUrl = params.pinsterApiUrl || parseBase64Keys(process.env.PINSTER_API_URL);
         // The private key to encode JWTs with
-        this.privateKey = params.privateKey || process.env.PRIVATE_KEY;
+        this.privateKey = params.privateKey || parseBase64Keys(process.env.PRIVATE_KEY);
         console.debug(`TokenProvider params: ${JSON.stringify(this)}`);
     }
 
@@ -64,11 +73,6 @@ class TokenProvider {
     }
 
 
-    parseBase64Keys(key) {
-        if (key) {
-            return
-        }
-    }
 }
 
 module.exports = TokenProvider;
