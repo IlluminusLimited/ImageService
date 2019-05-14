@@ -8,8 +8,6 @@ module.exports = class Base64Handler {
     }
 
     async processImage(image) {
-        console.log('ProcessImage image: ', image);
-        console.log('Base64Handler is: ', this);
         if (this.base64Regex.test(image)) {
             const matches = this.base64Regex.exec(image);
             const result = {};

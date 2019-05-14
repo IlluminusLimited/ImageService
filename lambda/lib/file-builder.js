@@ -13,8 +13,6 @@ module.exports = class FileBuilder {
     }
 
     async getFile(parsedRequest) {
-        console.log('getFile parsedRequest: ', parsedRequest);
-        console.log('FileBuilder is: ', this);
         return this.base64Handler.processImage(parsedRequest.image)
             .then(processedImage => {
                 const buffer = processedImage.buffer;
