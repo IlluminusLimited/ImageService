@@ -21,7 +21,7 @@ class TokenProvider {
         //We only receive tokens targeted at us (check aud on incoming tokens against this) and we only generate tokens for the api (use this for iss)
         this.imageServiceUrl = params.imageServiceUrl || process.env.IMAGE_SERVICE_URL;
         // We only generate tokens for PinsterApi to consume (use this as iss) and we only consume tokens from the api (check the aud against this value)
-        this.pinsterApiUrl = params.pinsterApiUrl || parseBase64Keys(process.env.PINSTER_API_URL);
+        this.pinsterApiUrl = params.pinsterApiUrl || process.env.PINSTER_API_URL;
         // The private key to encode JWTs with
         this.privateKey = params.privateKey || parseBase64Keys(process.env.PRIVATE_KEY);
         console.debug(`TokenProvider params: ${JSON.stringify(this)}`);
