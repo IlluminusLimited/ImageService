@@ -43,7 +43,7 @@ class TokenProvider {
         } catch (err) {
             console.error('Raw JWT error: ', err);
             let stringifiedError = JSON.stringify(err);
-            if (!stringifiedError) {
+            if (stringifiedError.length < 4) {
                 stringifiedError = 'Something was wrong with the signature verification step.';
             }
             throw new Forbidden(`Token was invalid. Error: ${stringifiedError}`);
@@ -61,6 +61,13 @@ class TokenProvider {
         };
 
         return jwt.sign(payload, this.privateKey.trim(), options);
+    }
+
+
+    parseBase64Keys(key) {
+        if (key) {
+            return
+        }
     }
 }
 
