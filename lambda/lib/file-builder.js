@@ -10,32 +10,30 @@ module.exports = class FileBuilder {
     }
 
     async getFile(parsedRequest) {
-        return this.processImage(parsedRequest.image)
-            .then(processedImage => {
-                const buffer = processedImage.buffer;
-                const mimeType = processedImage.mimeType;
-                const baseFileName = md5(buffer);
-                const fileName = 'raw/' + baseFileName;
-                const contentType = `${mimeType.type}/${mimeType.subtype}`;
+        const processedImage = this.processImage(parsedRequest.image);
 
-                parsedRequest.metadata['base_file_name'] = baseFileName;
+        const buffer = processedImage.buffer;
+        const mimeType = processedImage.mimeType;
+        const baseFileName = md5(buffer);
+        const fileName = 'raw/' + baseFileName;
+        const contentType = `${mimeType.type}/${mimeType.subtype}`;
 
-                if (mimeType.type === 'image') {
-                    return {
-                        Key: fileName,
-                        Body: buffer,
-                        ContentType: contentType,
-                        CacheControl: this.cacheControl,
-                        Metadata: parsedRequest.metadata,
-                        Bucket: parsedRequest.bucket
-                    };
-                }
+        parsedRequest.metadata['base_file_name'] = baseFileName;
 
-                throw new BadRequest(`Files of type: ${contentType} are not supported.`);
-            });
+        if (mimeType.type === 'image') {
+            return {
+                Key: fileName,
+                Body: buffer,
+                ContentType: contentType,
+                CacheControl: this.cacheControl,
+                Metadata: parsedRequest.metadata,
+                Bucket: parsedRequest.bucket
+            };
+        }
+        throw new BadRequest(`Files of type: ${contentType} are not supported.`);
     }
 
-    async processImage(image) {
+    processImage(image) {
         const base64Regex = /data:([^/]+)\/([^;]+);base64,(.+)/;
         if (base64Regex.test(image)) {
             const matches = base64Regex.exec(image);
