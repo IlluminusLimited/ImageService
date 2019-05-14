@@ -81,6 +81,11 @@ The downside of this is that `serverless.yml` cannot be saved in the project and
 Don't forget to empty the image upload bucket of files before you tear it down, otherwise the removal will fail.
 I may add support for this to `serverless.rb` but it will need to be refactored first.
 
+
+## Backing up images
+
+`aws s3 cp --recursive s3://bucketname destinationFolder --exclude "*_*"`
+
 ## Credits:
 
 * Foo Bar videos: 
