@@ -16,9 +16,7 @@ module.exports.upload = async (event) => {
         })
         .catch(err => {
             console.error('Error processing: ', err);
-            const awsResponse = err.generateResponse();
-            console.debug('Response for aws: ', awsResponse);
-            return awsResponse;
+            throw err;
         });
 };
 
@@ -47,9 +45,7 @@ module.exports.notifySuccess = async (event) => {
             return awsResponse;
         }).catch(err => {
             console.error('Error processing: ', err);
-            const awsResponse = err.generateResponse();
-            console.debug('Response for aws: ', awsResponse);
-            return awsResponse;
+            throw err;
         });
 };
 
@@ -63,9 +59,7 @@ module.exports.notifyFailure = async (event) => {
             return awsResponse;
         }).catch(err => {
             console.error('Error processing: ', err);
-            const awsResponse = err.generateResponse();
-            console.debug('Response for aws: ', awsResponse);
-            return awsResponse;
+            throw err;
         });
 
 };

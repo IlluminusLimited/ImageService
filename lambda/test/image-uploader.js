@@ -47,7 +47,7 @@ const badResponsePayload = {
 };
 
 const MockFileBuilder = class MockFileBuilder {
-    getFile() {
+    async getFile() {
         return {
             Key: 'filename',
             Body: new Buffer([1, 2, 3, 4])
@@ -56,7 +56,7 @@ const MockFileBuilder = class MockFileBuilder {
 };
 
 const MockFileWriter = class MockFileWriter {
-    saveObject() {
+    async saveObject() {
         return new Ok('asdf');
     }
 };
