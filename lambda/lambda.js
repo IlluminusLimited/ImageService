@@ -16,7 +16,14 @@ module.exports.upload = async (event) => {
         })
         .catch(err => {
             console.error('Error processing: ', err);
-            throw err;
+            try {
+                const awsResponse = err.generateResponse();
+                console.debug('Response for aws: ', awsResponse);
+                return awsResponse;
+            } catch(error) {
+                console.error('Error generating error response', error);
+                return err;
+            }
         });
 };
 
@@ -43,9 +50,17 @@ module.exports.notifySuccess = async (event) => {
             const awsResponse = imageCreateResponse.generateResponse();
             console.debug('Response for aws: ', awsResponse);
             return awsResponse;
-        }).catch(err => {
+        })
+        .catch(err => {
             console.error('Error processing: ', err);
-            throw err;
+            try {
+                const awsResponse = err.generateResponse();
+                console.debug('Response for aws: ', awsResponse);
+                return awsResponse;
+            } catch(error) {
+                console.error('Error generating error response', error);
+                return err;
+            }
         });
 };
 
@@ -57,11 +72,18 @@ module.exports.notifyFailure = async (event) => {
             const awsResponse = publishEvent.generateResponse();
             console.debug('Response for aws: ', awsResponse);
             return awsResponse;
-        }).catch(err => {
+        })
+        .catch(err => {
             console.error('Error processing: ', err);
-            throw err;
+            try {
+                const awsResponse = err.generateResponse();
+                console.debug('Response for aws: ', awsResponse);
+                return awsResponse;
+            } catch(error) {
+                console.error('Error generating error response', error);
+                return err;
+            }
         });
-
 };
 
 module.exports.moveImage = (event, context, callback) => {
