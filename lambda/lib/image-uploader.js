@@ -101,7 +101,7 @@ module.exports = class ImageUploader {
 
     async perform(event) {
         return this.parseRequest(event)
-            .then(this.fileBuilder.getFile)
-            .then(this.fileWriter.saveObject);
+            .then((output) => this.fileBuilder.getFile(output))
+            .then((output) => this.fileWriter.saveObject(output));
     }
 };
