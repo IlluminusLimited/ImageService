@@ -7,6 +7,7 @@ let base64ImageMetadata = 'data:image/png;base64,';
 let base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAsAAAAECAYAAABY+sXzAAAABHNCSVQICAgIfAhkiAAAAFlJREFUCJl9yjEKwCAUBNERv43g/U+WKqVVsNRKxU0jJGnyYGGLcTln1VoBSCnRWsN7D0AIATOjlEKMEbQd16kxhuac6r1rrfWZJBmbAEn8eeKlT/z+zjkAbkDFRMbggmGwAAAAAElFTkSuQmCC';
 let imageMD5 = md5(Buffer.from(base64Image, 'base64'));
 const util = require('util');
+const BadRequest = require('../lib/bad-request');
 
 describe('FileBuilder', function () {
     it('Returns the correct file information', function () {
@@ -24,22 +25,38 @@ describe('FileBuilder', function () {
             Bucket: 'bucket'
         };
 
-        let callback = (err, data) => {
-            if (err) {
-                console.log(util.inspect(err, {depth: 5}));
-            }
-
-            expect(err).to.equal(undefined);
-            expect(data).to.deep.equal(mockFile);
-        };
-
         let parsedPayload = {
             metadata: {'metadata': 'value'},
             image: base64ImageMetadata + base64Image,
             bucket: 'bucket'
         };
 
-        fileBuilder.getFile(parsedPayload, callback);
+        return fileBuilder.getFile(parsedPayload).then(data => {
+            expect(data).to.deep.equal(mockFile);
+        });
 
+    });
+
+
+    it('Gets the correct mime type and image', function () {
+        let fakeImage = 'data:test/1234;base64,testing';
+
+        new FileBuilder().processImage(fakeImage)
+            .then(base64Handler => {
+                expect(base64Handler.mimeType).to.deep.equal({type: 'test', subtype: '1234'});
+                expect(base64Handler.base64Image).to.equal('testing');
+            });
+    });
+
+    it('Throws a regex mismatch exception', function () {
+        let fakeImage = 'blah';
+
+        return new FileBuilder().processImage(fakeImage)
+            .then(() => {
+                throw new Error('Should not get here');
+            })
+            .catch(err => {
+                expect(JSON.stringify(err)).to.equal(JSON.stringify(new BadRequest('Your image did not match the base64 regex')));
+            });
     });
 });
