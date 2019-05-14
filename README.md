@@ -15,28 +15,26 @@ Pinster's image handling service operates using several AWS technologies:
 * CloudWatch
 
 The basic flow of the service is as follows:
-1. Client POSTs image to the image uploading api (probably `images.api.pinster.io/v1/upload`)
+1. Client POSTs image to the image uploading api
     1. The POST body is validated against the expected structure:
                         
         ```
         {
           "data": {
-            "metadata": {
-              "user_id":"the user's uuid",
-            },
             "image": "a base64 encoded image"
           }
         }
         ```
 
+    1. The metadata is built form the JWT given from PinsterApi
     1. The image is saved to s3 with accompanying metadata under a key that is the md5 of the image itself.
 1. S3 fires an event which kicks off a lambda that starts the step function to handle the new file
     1. The first step of the step function is to validate that the image is safe for work
-       1. If the image is nsfw then the step function will call a lambda that will post to PinsterBase 
-        that a user's image upload was flagged
+       1. If the image is nsfw then the step function will call a lambda that will post to PinsterApi 
+        that a user's image upload was flagged -- Does not work yet. Just posts on SNS instead.
     1. The validated image event is passed to the generateThumbnail function which will generate thumbnails 
     of preconfigured sizes into the s3 bucket
-    1. PinsterBase is notified of the new image and accompanying thumbnails.
+    1. PinsterApi is notified of the new image and accompanying thumbnails.
 
 
 ## Testing
@@ -54,7 +52,7 @@ Checklist:
 
 #### Runtimes
 * Ruby > 2.1 (for deploying)
-* Nodejs ~6.10
+* Nodejs ~8.10
   * [Serverless](https://serverless.com/framework/docs/getting-started/)
 
 To get all the dependencies run `npm install`

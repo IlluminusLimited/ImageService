@@ -29,6 +29,7 @@ module.exports = class ThumbnailGenerator {
             callback(new BadRequest(`Key: '${requestedImageKey}' is not a supported image file!`));
         }
         else {
+            console.debug('Match data: ', match);
             const dimensions = match[4]; //400xauto, for example.
             const width = match[5] === 'auto' ? null : Math.min(parseInt(match[5], 10), MAX_SIZE);
             const height = match[6] === 'auto' ? null : Math.min(parseInt(match[6], 10), MAX_SIZE);
