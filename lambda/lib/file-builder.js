@@ -10,7 +10,23 @@ module.exports = class FileBuilder {
     }
 
     async getFile(parsedRequest) {
-        const processedImage = this.processImage(parsedRequest.image);
+        let processedImage = null;
+
+        const base64Regex = /data:([^/]+)\/([^;]+);base64,(.+)/;
+        if (base64Regex.test(parsedRequest)) {
+            const matches = base64Regex.exec(parsedRequest);
+            const result = {};
+            result.mimeType = {
+                type: matches[1],
+                subtype: matches[2]
+            };
+            result.base64Image = matches[3];
+            result.buffer = Buffer.from(result.base64Image, 'base64');
+            processedImage = result;
+        }
+        else {
+            throw new BadRequest('Your image did not match the base64 regex');
+        }
 
         const buffer = processedImage.buffer;
         const mimeType = processedImage.mimeType;
@@ -31,21 +47,5 @@ module.exports = class FileBuilder {
             };
         }
         throw new BadRequest(`Files of type: ${contentType} are not supported.`);
-    }
-
-    processImage(image) {
-        const base64Regex = /data:([^/]+)\/([^;]+);base64,(.+)/;
-        if (base64Regex.test(image)) {
-            const matches = base64Regex.exec(image);
-            const result = {};
-            result.mimeType = {
-                type: matches[1],
-                subtype: matches[2]
-            };
-            result.base64Image = matches[3];
-            result.buffer = Buffer.from(result.base64Image, 'base64');
-            return result;
-        }
-        throw new BadRequest('Your image did not match the base64 regex');
     }
 };

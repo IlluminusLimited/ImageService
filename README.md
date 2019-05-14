@@ -44,6 +44,12 @@ To run the tests, make sure you have deployed to dev and then run `npm test`
 
 ## Deploying
 
+Checklist:
+
+1. Generate new keys for pinsterapi and image service
+1. Set environment variables in secrets manager
+
+
 ### Configuring your environment
 
 #### Runtimes

@@ -37,20 +37,20 @@ describe('FileBuilder', function () {
 
     });
 
-
-    it('Gets the correct mime type and image', function () {
-        let fakeImage = 'data:test/1234;base64,testing';
-
-        const processedImage = new FileBuilder().processImage(fakeImage);
-        expect(processedImage.mimeType).to.deep.equal({type: 'test', subtype: '1234'});
-        expect(processedImage.base64Image).to.equal('testing');
-    });
+    // it('Gets the correct mime type and image', function () {
+    //     let fakeImage = 'data:test/1234;base64,testing';
+    //
+    //     const processedImage = new FileBuilder().getFile(fakeImage);
+    //     expect(processedImage.mimeType).to.deep.equal({type: 'test', subtype: '1234'});
+    //     expect(processedImage.base64Image).to.equal('testing');
+    // });
 
     it('Throws a regex mismatch exception', function () {
         let fakeImage = 'blah';
         try {
-            new FileBuilder().processImage(fakeImage);
-            throw new Error('Should not get here');
+            new FileBuilder().getFile(fakeImage).then(() => {
+                throw new Error('Should not get here');
+            });
         } catch (err) {
             expect(JSON.stringify(err)).to.equal(JSON.stringify(new BadRequest('Your image did not match the base64 regex')));
         }
