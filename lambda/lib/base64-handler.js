@@ -3,10 +3,15 @@
 const BadRequest = require('./bad-request');
 
 module.exports = class Base64Handler {
+    constructor(params = {}) {
+        this.base64Regex = params.base64Regex ? params.base64Regex : /data:([^/]+)\/([^;]+);base64,(.+)/;
+    }
+
     async processImage(image) {
-        const base64Regex = /data:([^/]+)\/([^;]+);base64,(.+)/;
-        if (base64Regex.test(image)) {
-            const matches = base64Regex.exec(image);
+        console.log('ProcessImage image: ', image);
+        console.log('Base64Handler is: ', this);
+        if (this.base64Regex.test(image)) {
+            const matches = this.base64Regex.exec(image);
             const result = {};
             result.mimeType = {
                 type: matches[1],

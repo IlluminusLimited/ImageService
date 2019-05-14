@@ -78,7 +78,7 @@ describe('ImageUploader', function () {
                 this.body = JSON.stringify(goodPayload);
             }
         };
-        return new ImageUploader({tokenProvider: new MockTokenProvider()})
+        return new ImageUploader({bucketName: 'bucket', tokenProvider: new MockTokenProvider()})
             .parseRequest(new eventFixture())
             .then(result => {
                 expect(result).to.deep.include(goodPayload.data);
@@ -104,7 +104,7 @@ describe('ImageUploader', function () {
             image: goodVerbosePayload.data.image,
             bucket: 'bucket'
         };
-        return new ImageUploader({tokenProvider: new MockTokenProvider(), bucketName: 'bucket'})
+        return new ImageUploader({bucketName: 'bucket', tokenProvider: new MockTokenProvider()})
             .parseRequest(new eventFixture())
             .then(result => {
                 expect(result).to.deep.equal(expected);
@@ -119,7 +119,7 @@ describe('ImageUploader', function () {
         };
 
 
-        return new ImageUploader({tokenProvider: new MockTokenProvider(), bucket: 'bucket'})
+        return new ImageUploader({bucketName: 'bucket', tokenProvider: new MockTokenProvider(), bucket: 'bucket'})
             .parseRequest(new eventFixture())
             .catch((err) => {
                 expect(err).to.deep.equal({
@@ -141,7 +141,7 @@ describe('ImageUploader', function () {
 
         const imageUploader = new ImageUploader({
             tokenProvider: new MockTokenProvider(),
-            bucket: 'bucket',
+            bucketName: 'bucket',
             fileBuilder: new MockFileBuilder(),
             fileWriter: new MockFileWriter()
         });
@@ -170,7 +170,7 @@ describe('ImageUploader', function () {
 
         const imageUploader = new ImageUploader({
             tokenProvider: new MockTokenProvider(),
-            bucket: 'bucket',
+            bucketName: 'bucket',
             fileBuilder: new MockFileBuilder(),
             fileWriter: new MockFileWriter()
         });

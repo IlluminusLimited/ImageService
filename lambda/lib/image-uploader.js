@@ -21,10 +21,10 @@ const exampleBody = {
 
 module.exports = class ImageUploader {
     constructor(params = {}) {
-        this.FileBuilder = _.isUndefined(params.fileBuilder) ? new FileBuilder() : params.fileBuilder;
-        this.FileWriter = _.isUndefined(params.fileWriter) ? new FileWriter() : params.fileWriter;
+        this.fileBuilder = _.isUndefined(params.fileBuilder) ? new FileBuilder() : params.fileBuilder;
+        this.fileWriter = _.isUndefined(params.fileWriter) ? new FileWriter() : params.fileWriter;
         this.bucket = _.isUndefined(params.bucketName) ? process.env.BUCKET_NAME : params.bucketName;
-        if (this.bucket === null) {
+        if (_.isUndefined(this.bucket)) {
             throw new InternalServerError('Bucket undefined');
         }
         this.tokenProvider = _.isUndefined(params.tokenProvider) ? new TokenProvider() : params.tokenProvider;
@@ -101,7 +101,7 @@ module.exports = class ImageUploader {
 
     async perform(event) {
         return this.parseRequest(event)
-            .then(this.FileBuilder.getFile)
-            .then(this.FileWriter.saveObject);
+            .then(this.fileBuilder.getFile)
+            .then(this.fileWriter.saveObject);
     }
 };

@@ -7,11 +7,14 @@ const Base64Handler = require('./base64-handler');
 
 module.exports = class FileBuilder {
     constructor(params = {}) {
+        console.log('File builder params', params);
         this.base64Handler = _.isUndefined(params.base64Handler) ? new Base64Handler() : params.base64Handler;
         this.cacheControl = _.isUndefined(params.cacheControl) ? 'max-age=86400' : params.cacheControl;
     }
 
     async getFile(parsedRequest) {
+        console.log('getFile parsedRequest: ', parsedRequest);
+        console.log('FileBuilder is: ', this);
         return this.base64Handler.processImage(parsedRequest.image)
             .then(processedImage => {
                 const buffer = processedImage.buffer;

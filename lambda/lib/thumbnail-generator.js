@@ -43,7 +43,7 @@ module.exports = class ThumbnailGenerator {
                 newKey: newKey
             };
 
-            console.log(imageData);
+            console.log('Image data', imageData);
 
             callback(undefined, imageData);
         }

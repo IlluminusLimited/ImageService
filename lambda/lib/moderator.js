@@ -23,7 +23,7 @@ module.exports = class Moderator {
             MinConfidence: 99
         };
 
-        console.log(params);
+        console.log('Moderator params', params);
 
         this.rekognition.detectModerationLabels(params).promise()
             .then(result => {
