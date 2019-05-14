@@ -97,7 +97,7 @@ functions:
           IMAGE_SERVICE_URL: ${self:custom.imageServiceUrl}
 
   startExecution:
-    handler: lambda/lambda.perform
+    handler: lambda/lambda.startExecution
     events:
       - s3:
           bucket: ${self:custom.imageUploadBucket}

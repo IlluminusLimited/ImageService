@@ -31,6 +31,15 @@ describe('Notifier', function () {
             });
     });
 
+    it('can explode', function () {
+        let notifier = new Notifier({apiClient: new MockApiClient(false)});
+
+        return notifier.notifySuccess(mockImageParams)
+            .then((response) => {
+                expect(response).to.deep.equal(mockImageParams);
+            });
+    });
+
     it('can notify failure', function () {
         let notifier = new Notifier({snsPublish:  mockSNSClient});
 
