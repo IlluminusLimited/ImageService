@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const util = require('util');
 const Notifier = require('../lib/notifier');
 
-const mockImageParams = {bucket: 'bucket', key: 'key'};
+const mockImageParams = {data: {bucket: 'bucket', key: 'key'}};
 
 const MockApiClient = class MockApiClient {
     constructor(shouldExplode) {
@@ -15,15 +15,6 @@ const MockApiClient = class MockApiClient {
         if (this.shouldExplode) {
             throw new Error('Should explode');
         }
-        return body;
-    }
-};
-
-
-const MockApiClient2 = class MockApiClient {
-    async post(path, body, tokenParams) {
-
-        expect(tokenParams).to_
         return body;
     }
 };
