@@ -41,7 +41,7 @@ const badResponsePayload = {
             image: 'base64 encoded image',
             name: 'Optional name of image',
             description: 'Optional description',
-            featured: 'Optional unix epoch integer in ms'
+            featured: 'Optional ISO8601 format'
         }
     }
 };
