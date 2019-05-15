@@ -37,6 +37,7 @@ module.exports = class Notifier {
             imageable_type: imageParams.imageable_type,
             imageable_id: imageParams.imageable_id
         };
+        console.log('Params to api: ', imageParams, tokenParams);
         return this.apiClient.post('/v1/images/', imageParams, tokenParams);
     }
 };

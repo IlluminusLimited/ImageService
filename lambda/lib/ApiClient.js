@@ -39,7 +39,7 @@ module.exports = class ApiClient {
             .then(extractJson);
     }
 
-    async post(pathOrUrl, body = {}, tokenParams = {}) {
+    async post(pathOrUrl, body, tokenParams) {
         const url = this.pathToUrl(pathOrUrl);
         const payload = JSON.stringify(body);
         console.log('Payload to post: ', payload);

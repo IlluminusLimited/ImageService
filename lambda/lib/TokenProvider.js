@@ -64,7 +64,7 @@ class TokenProvider {
     }
 
     //Returns parsed payload of JWT
-    async generate(payload = {}) {
+    async generate(payload) {
         const options = {
             issuer: this.imageServiceUrl,
             audience: this.pinsterApiUrl,
