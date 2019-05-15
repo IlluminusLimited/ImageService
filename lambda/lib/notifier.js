@@ -33,9 +33,10 @@ module.exports = class Notifier {
 
 
     async createImage(imageParams) {
-        const tokenParams = {};
-        tokenParams.imageable_type = imageParams.imageable_type;
-        tokenParams.imageable_id = imageParams.imageable_id;
+        const tokenParams = {
+            imageable_type: imageParams.imageable_type,
+            imageable_id: imageParams.imageable_id
+        };
         return this.apiClient.post('/v1/images/', imageParams, tokenParams);
     }
 };
