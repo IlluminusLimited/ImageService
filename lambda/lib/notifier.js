@@ -4,6 +4,7 @@ const ApiClient = require('./ApiClient');
 const _ = require('lodash');
 const util = require('util');
 const AWS = require('aws-sdk');
+const Ok = require('./ok');
 
 module.exports = class Notifier {
     constructor(params = {}) {
@@ -37,7 +38,7 @@ module.exports = class Notifier {
             imageable_type: imageParams.data.imageable_type,
             imageable_id: imageParams.data.imageable_id
         };
-        return this.apiClient.post('/v1/images/', imageParams, tokenParams);
+        return new Ok(this.apiClient.post('/v1/images/', imageParams, tokenParams));
     }
 };
 
