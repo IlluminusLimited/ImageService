@@ -19,7 +19,9 @@ const MockApiClient = class MockApiClient {
     }
 };
 
-const mockSNSClient = async (params) => {return params;};
+const mockSNSClient = async (params) => {
+    return params;
+};
 
 describe('Notifier', function () {
     it('can notify success', function () {
@@ -27,7 +29,7 @@ describe('Notifier', function () {
 
         return notifier.notifySuccess(mockImageParams)
             .then((response) => {
-                expect(response).to.deep.equal(mockImageParams);
+                expect(response.generateResponse().body).to.deep.equal(JSON.stringify(mockImageParams));
             });
     });
 
@@ -36,12 +38,12 @@ describe('Notifier', function () {
 
         return notifier.notifySuccess(mockImageParams)
             .then((response) => {
-                expect(response).to.deep.equal(mockImageParams);
+                expect(response.generateResponse().body).to.deep.equal(JSON.stringify(mockImageParams));
             });
     });
 
     it('can notify failure', function () {
-        let notifier = new Notifier({snsPublish:  mockSNSClient});
+        let notifier = new Notifier({snsPublish: mockSNSClient});
 
         return notifier.notifyFailure({error: 'idk'})
             .then((response) => {
