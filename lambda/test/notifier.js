@@ -19,6 +19,15 @@ const MockApiClient = class MockApiClient {
     }
 };
 
+
+const MockApiClient2 = class MockApiClient {
+    async post(path, body, tokenParams) {
+
+        expect(tokenParams).to_
+        return body;
+    }
+};
+
 const mockSNSClient = async (params) => {return params;};
 
 describe('Notifier', function () {

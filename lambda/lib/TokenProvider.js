@@ -40,6 +40,10 @@ class TokenProvider {
             throw new Unauthorized('Request missing valid Authorization header.');
         }
 
+        return this.verify(token);
+    }
+
+    async verify(token) {
         try {
             return jwt.verify(token, this.apiPublicKey.trim(), {
                 audience: this.imageServiceUrl,
