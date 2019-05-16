@@ -17,6 +17,7 @@ module.exports = class ImageTransformer {
         }
         else {
             Sharp(body)
+                .rotate()
                 .resize(width, height)
                 .max()
                 .toFormat(format)
