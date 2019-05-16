@@ -84,11 +84,11 @@ module.exports = class ImageUploader {
         }
 
         if (data.featured) {
-            if (Number.isInteger(data.featured)) {
+            if (String(data.featured)) {
                 metadata.featured = data.featured;
             }
             else {
-                errors.featured = 'Must be an integer. Omit or null the field otherwise.';
+                errors.featured = 'Must be a string. Omit or null the field otherwise.';
             }
         }
 

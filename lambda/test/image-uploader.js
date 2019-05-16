@@ -16,7 +16,7 @@ const goodVerbosePayload = {
         image: 'base64 encoded image',
         name: 'Awesome image',
         description: 'This image was taken by bobbert',
-        featured: 1557762123
+        featured: '2019-05-16T02:03:37+0000'
     }
 };
 
@@ -26,7 +26,6 @@ const badVerbosePayload = {
         image: 'base64 encoded image',
         name: 'a',
         description: 'This image was taken by bobbert who really likes to type a whole lot of things and is too verbose. No like really bobbert totally talks too much and needs to stop because reasons.',
-        featured: '231'
     }
 };
 
@@ -185,7 +184,6 @@ describe('ImageUploader', function () {
                                 data: {
                                     name: 'Must be between 3 and 140 characters A-z0-9. Omit or null the field otherwise.',
                                     description: 'Must be between 3 and 140 characters A-z0-9. Omit or null the field otherwise.',
-                                    featured: 'Must be an integer. Omit or null the field otherwise.',
                                 }
                             }
                         }, headers: {
