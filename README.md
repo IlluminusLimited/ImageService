@@ -75,6 +75,10 @@ as bucket names are global.*
 
 The downside of this is that `serverless.yml` cannot be saved in the project and must be generated from
  `serverless_template.yml`
+ 
+ #### Environment variables
+ 
+ Use Secrets Manager to configure environment variables.
 
 ## Un-deploying
 
