@@ -115,7 +115,7 @@ functions:
           method: get
           path: generate
           cors: true
-    memorySize: 1024
+    memorySize: 2048
     environment:
           BUCKET: ${self:custom.imageHostBucket}
           URL: ${self:custom.imageHostBucketUrl}
