@@ -19,7 +19,7 @@ module.exports = class ImageTransformer {
             Sharp(body)
                 .rotate()
                 .resize(width, height, {fit: 'inside'})
-                .composite([{input: '../assets/pinster_watermark.svg', gravity: 'southeast'}])
+                // .composite([{input: '../assets/pinster_watermark.svg', gravity: 'southeast'}])
                 .toFormat(format)
                 .toBuffer()
                 .then(data => {
