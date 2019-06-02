@@ -28,7 +28,7 @@ module.exports = class ImageTransformer {
                 })
                 .catch(err => {
                     console.error('Error transforming image', err);
-                    return new InternalServerError(err);
+                    throw new InternalServerError(err);
                 });
         }
     }
