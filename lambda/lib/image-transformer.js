@@ -26,7 +26,10 @@ module.exports = class ImageTransformer {
                     parsedParameters.buffer = data;
                     callback(undefined, parsedParameters);
                 })
-                .catch(err => new InternalServerError(err));
+                .catch(err => {
+                    console.error('Error transforming image', err);
+                    return new InternalServerError(err);
+                });
         }
     }
 };
