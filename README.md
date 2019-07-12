@@ -88,7 +88,13 @@ I may add support for this to `serverless.rb` but it will need to be refactored 
 
 ## Backing up images
 
-`aws s3 cp --recursive s3://bucketname destinationFolder --exclude "*_*"`
+`aws s3 cp --recursive s3://image-service-dev.pinster.io /dev/null --exclude "*_*" --dry-run`
+
+
+## Purging all thumbnails
+
+`aws s3 rm --recursive s3://image-service-dev.pinster.io --exclude "*" --include "*_*" --dryrun`
+
 
 ## Credits:
 
